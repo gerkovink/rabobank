@@ -37,12 +37,20 @@ We will adapt the course as we go. Therefore we suggest to access the materials 
 
 | # | Time         | Date        |
 |---|--------------|-------------|
-| 1 | 9.30 - 12.00 | January 21  |
+| 1 | 9.30 - 12.00 | [January 21](https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZDE5MGQyOTMtZDU2Ni00OTU4LWIyODItZjc4M2I4MzZiZjE0%40thread.v2/0?context=%7b%22Tid%22%3a%22d72758a0-a446-4e0f-a0aa-4bf95a4a10e7%22%2c%22Oid%22%3a%22cc7d7fcd-73aa-4668-936a-2ca38cace0f3%22%7d)  |
 | 2 | 9.30 - 12.00 | February 11 |
 | 3 | 9.30 - 12.00 | March 11    |
 | 4 | 9.30 - 12.00 | March 25    |
 | 5 | 9.30 - 12.00 | April 8     |
 
+# Overview
+
+## Column 1
+
+### Description
+This page holds the course materials and meeting links for the meetings on statistics between Utrecht University and the Rabobank. 
+
+Please use the tabs above to navigate this page.
 
 # Meet the team
 
@@ -117,6 +125,8 @@ In this meeting, [dr. Peter Lugtig](https://www.peterlugtig.com)
 will teach us about *Inference and Hypothesis Testing*. <br>
 
 During and after the lecture there will be plenty of room for questions and discussion. To aid the understanding of this meeting's theory we have prepared a series of exercises for you. You can find all meeting materials in the column to the right. 
+
+[**THIS IS THE MEETING LINK FOR THE FIRST MEETING**](https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZDE5MGQyOTMtZDU2Ni00OTU4LWIyODItZjc4M2I4MzZiZjE0%40thread.v2/0?context=%7b%22Tid%22%3a%22d72758a0-a446-4e0f-a0aa-4bf95a4a10e7%22%2c%22Oid%22%3a%22cc7d7fcd-73aa-4668-936a-2ca38cace0f3%22%7d)
 
 ### Meeting schedule
 | When?  |      | What?      |
