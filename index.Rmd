@@ -153,7 +153,7 @@ Please find the lecture slides and relevant materials below:
 
 - [JASP exercises for meeting 1]()
 
-If you have questions about the exercises, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
+If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl)
 
 ### Exercises in `R`
 [`R`](https://www.r-project.org) is a free software environment that serves as the de facto standard for statistical computing and graphics. If you have experience with statistics and programming, we recommend following the exercises in `R`. 
