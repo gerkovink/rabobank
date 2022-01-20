@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Introduction to R</title>
+
+<script src="someexperience_files/header-attrs-2.11/header-attrs.js"></script>
+<script src="someexperience_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="someexperience_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="someexperience_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="someexperience_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="someexperience_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="someexperience_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="someexperience_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="someexperience_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="someexperience_files/navigation-1.1/tabsets.js"></script>
+<link href="someexperience_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="someexperience_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Introduction to R</h1>
+
+</div>
+
+
+<style type="text/css">
+  
+body{ /* Normal  */
+  font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 18px;
+  color: DarkBlue;
+}
+h1 { /* Header 1 */
+  font-size: 18px;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+  font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+  font-size: 14px;
+}
+</style>
+<hr />
+<div id="exercises" class="section level1">
+<h1>Exercises</h1>
+<p>These exercises yield a quick introduction of basic data wrangling, pipes and visualization in <code>R</code>.</p>
+<hr />
+<p>The following packages are required for this practical:</p>
+<pre class="r"><code>library(dplyr)    # For data wrangling
+library(magrittr) # For pipes
+library(mice)     # For the boys data
+library(ggplot2)  # Plotting device</code></pre>
+<p>and if you’d like the same results as I have obtained, you can fix the random seed</p>
+<pre class="r"><code>set.seed(123)</code></pre>
+<hr />
+<div id="exercise-1" class="section level2">
+<h2>Exercise 1</h2>
+<hr />
+<ol style="list-style-type: decimal">
+<li><strong>Use a pipe to do the following:</strong></li>
+</ol>
+<ul>
+<li>draw 1000 values from a normal distribution with <code>mean = 5</code> and <code>sd = 1</code> - <span class="math inline">\(N(5, 1)\)</span>,</li>
+<li>create a matrix where the first 500 values are the first column and the second 500 values are the second column **</li>
+<li>make a scatterplot of these two columns</li>
+</ul>
+<pre class="r"><code>rnorm(1000, 5) %&gt;%
+  matrix(ncol = 2) %&gt;%
+  plot()</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<hr />
+</div>
+<div id="exercise-2" class="section level2">
+<h2>Exercise 2</h2>
+<hr />
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Use a pipe to calculate the correlation matrix on the <code>anscombe</code> data set</strong></li>
+</ol>
+<pre class="r"><code>anscombe %&gt;%
+  cor()</code></pre>
+<pre><code>##            x1         x2         x3         x4         y1         y2         y3
+## x1  1.0000000  1.0000000  1.0000000 -0.5000000  0.8164205  0.8162365  0.8162867
+## x2  1.0000000  1.0000000  1.0000000 -0.5000000  0.8164205  0.8162365  0.8162867
+## x3  1.0000000  1.0000000  1.0000000 -0.5000000  0.8164205  0.8162365  0.8162867
+## x4 -0.5000000 -0.5000000 -0.5000000  1.0000000 -0.5290927 -0.7184365 -0.3446610
+## y1  0.8164205  0.8164205  0.8164205 -0.5290927  1.0000000  0.7500054  0.4687167
+## y2  0.8162365  0.8162365  0.8162365 -0.7184365  0.7500054  1.0000000  0.5879193
+## y3  0.8162867  0.8162867  0.8162867 -0.3446610  0.4687167  0.5879193  1.0000000
+## y4 -0.3140467 -0.3140467 -0.3140467  0.8165214 -0.4891162 -0.4780949 -0.1554718
+##            y4
+## x1 -0.3140467
+## x2 -0.3140467
+## x3 -0.3140467
+## x4  0.8165214
+## y1 -0.4891162
+## y2 -0.4780949
+## y3 -0.1554718
+## y4  1.0000000</code></pre>
+<hr />
+</div>
+<div id="exercise-3" class="section level2">
+<h2>Exercise 3</h2>
+<hr />
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Now use a pipe to calculate the correlation for the pair (<code>x4</code>, <code>y4</code>) on the <code>anscombe</code> data set</strong></li>
+</ol>
+<p>Using the standard <code>%&gt;%</code> pipe:</p>
+<pre class="r"><code>anscombe %&gt;%
+  subset(select = c(x4, y4)) %&gt;%
+  cor()</code></pre>
+<pre><code>##           x4        y4
+## x4 1.0000000 0.8165214
+## y4 0.8165214 1.0000000</code></pre>
+<p>Alternatively, we can use the <code>%$%</code> pipe from package <code>magrittr</code> to make this process much more efficient.</p>
+<pre class="r"><code>anscombe %$%
+  cor(x4, y4)</code></pre>
+<pre><code>## [1] 0.8165214</code></pre>
+<hr />
+</div>
+<div id="exercise-4" class="section level2">
+<h2>Exercise 4</h2>
+<hr />
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Use a pipe to calculate the correlation between <code>hgt</code> and <code>wgt</code> in the <code>boys</code> data set from package <code>mice</code>.</strong></li>
+</ol>
+<p>Because <code>boys</code> has missings values for almost all variables, we must first select <code>wgt</code> and <code>hgt</code> and then omit the rows that have missing values, before we can calculate the correlation. Using the standard <code>%&gt;%</code> pipe, this would look like:</p>
+<pre class="r"><code>boys %&gt;%
+  subset(select = c(&quot;wgt&quot;, &quot;hgt&quot;)) %&gt;%
+  cor(use = &quot;pairwise.complete.obs&quot;)</code></pre>
+<pre><code>##           wgt       hgt
+## wgt 1.0000000 0.9428906
+## hgt 0.9428906 1.0000000</code></pre>
+<p>which is equivalent to</p>
+<pre class="r"><code>boys %&gt;%
+  subset(select = c(&quot;wgt&quot;, &quot;hgt&quot;)) %&gt;%
+  na.omit() %&gt;%
+  cor()</code></pre>
+<pre><code>##           wgt       hgt
+## wgt 1.0000000 0.9428906
+## hgt 0.9428906 1.0000000</code></pre>
+<p>Alternatively, we can use the <code>%$%</code> pipe:</p>
+<pre class="r"><code>boys %$% 
+  cor(hgt, wgt, use = &quot;pairwise.complete.obs&quot;)</code></pre>
+<pre><code>## [1] 0.9428906</code></pre>
+<p>The <code>%$%</code> pipe <em>exposes</em> the listed dimensions of the <code>boys</code> dataset, such that we can refer to them directly.</p>
+<hr />
+</div>
+<div id="exercise-5" class="section level2">
+<h2>Exercise 5</h2>
+<hr />
+<ol start="5" style="list-style-type: decimal">
+<li><strong>Create a histogram for <code>age</code> in the <code>boys</code> data set</strong></li>
+</ol>
+<p>With the standard plotting device in <code>R</code>:</p>
+<pre class="r"><code>boys %$%
+  hist(age, breaks = 50)</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>The <code>breaks = 50</code> overrides the default breaks between the bars. By default the plot would be</p>
+<pre class="r"><code>boys %$%
+  hist(age)</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-12-1.png" width="672" /> Using a pipe is a nice approach for this plot because it inherits the names of the objects we aim to plot. Without the pipe we might need to adjust the main title for the histogram:</p>
+<pre class="r"><code>hist(boys$age, breaks = 50)</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>With <code>ggplot2</code>:</p>
+<pre class="r"><code>boys %&gt;%
+  ggplot() + 
+  geom_histogram(aes(age), binwidth = .4)</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Please note that the plots from <code>geom_histogram()</code> and <code>hist</code> use different calculations for the bars (bins) and hence may look slightly different.</p>
+<hr />
+</div>
+<div id="exercise-6" class="section level2">
+<h2>Exercise 6</h2>
+<hr />
+<ol start="6" style="list-style-type: decimal">
+<li><strong>Create a bar chart for <code>reg</code> in the boys data set</strong> With a standard plotting device in <code>R</code>:</li>
+</ol>
+<pre class="r"><code>boys %$%
+  table(reg) %&gt;%
+  barplot()</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>With <code>ggplot2</code>:</p>
+<pre class="r"><code>boys %&gt;%
+  ggplot() + 
+  geom_bar(aes(reg))</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>Note that <code>geom_bar</code> by default plots the <code>NA</code>’s, while <code>barplot()</code> omits the <code>NA</code>’s without warning. If we would not like to plot the <code>NA</code>s, then a simple <code>filter()</code> (see exercise 2) on the <code>boys</code> data is efficient.</p>
+<hr />
+</div>
+<div id="exercise-7" class="section level2">
+<h2>Exercise 7</h2>
+<hr />
+<ol start="7" style="list-style-type: decimal">
+<li><strong>Create a box plot for <code>hgt</code> with different boxes for <code>reg</code> in the <code>boys</code> data set</strong> With a standard plotting device in <code>R</code>:</li>
+</ol>
+<pre class="r"><code>boys %$%
+  boxplot(hgt ~ reg)</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>With <code>ggplot2</code>:</p>
+<pre class="r"><code>boys %&gt;%
+  ggplot(aes(reg, hgt)) +
+  geom_boxplot()</code></pre>
+<pre><code>## Warning: Removed 20 rows containing non-finite values (stat_boxplot).</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<hr />
+</div>
+</div>
+<div id="extra-exercises" class="section level1">
+<h1>Extra exercises</h1>
+<hr />
+<div id="exercise-8" class="section level2">
+<h2>Exercise 8</h2>
+<hr />
+<ol start="8" style="list-style-type: decimal">
+<li><strong>In the <code>boys</code> data set, <code>hgt</code> is recorded in centimeters. Use a pipe to transform <code>hgt</code> in the <code>boys</code> dataset to height in meters and verify the transformation</strong></li>
+</ol>
+<p>Using the standard <code>%&gt;%</code> and the <code>%$%</code> pipes:</p>
+<pre class="r"><code>boys %&gt;%
+  transform(hgt = hgt / 100) %$%
+  mean(hgt, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 1.321518</code></pre>
+<hr />
+</div>
+<div id="exercise-9" class="section level2">
+<h2>Exercise 9</h2>
+<hr />
+<ol start="9" style="list-style-type: decimal">
+<li><strong>Use a pipe to plot the pair (<code>hgt</code>, <code>wgt</code>) two times: once for <code>hgt</code> in meters and once for <code>hgt</code> in centimeters. Make the points in the ‘centimeter’ plot <code>red</code> and in the ‘meter’ plot <code>blue</code>. </strong></li>
+</ol>
+<p>This is best done with the <code>%T&gt;%</code> pipe:</p>
+<pre class="r"><code>boys %&gt;%
+  subset(select = c(hgt, wgt)) %T&gt;%
+  plot(col = &quot;red&quot;, main = &quot;Height in centimeters&quot;) %&gt;%
+  transform(hgt = hgt / 100) %&gt;%
+  plot(col = &quot;blue&quot;, main = &quot;Height in meters&quot;)</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-20-1.png" width="672" /><img src="someexperience_files/figure-html/unnamed-chunk-20-2.png" width="672" /></p>
+<p>The <code>%T&gt;%</code> pipe is very useful, because it creates a literal <code>T</code> junction in the pipe. It is perhaps most informative to graphically represent the above pipe as follows:</p>
+<pre class="r"><code>boys %&gt;%
+  subset(select = c(hgt, wgt)) %T&gt;%
+  plot(col = &quot;red&quot;, main = &quot;Height in centimeters&quot;) %&gt;%
+  transform(hgt = hgt / 100) %&gt;%
+  plot(col = &quot;blue&quot;, main = &quot;Height in meters&quot;)</code></pre>
+<p><img src="img/flow_t_pipe.png" /></p>
+<p>We can see that there is indeed a literal T-junction. Naturally, we can expand this process with more <code>%T&gt;%</code> pipes. However, once a pipe gets too long or too complicated, it is perhaps more useful to cut the piped problem into smaller, manageable pieces.</p>
+<hr />
+</div>
+<div id="exercise-10" class="section level2">
+<h2>Exercise 10</h2>
+<hr />
+<ol start="10" style="list-style-type: decimal">
+<li><strong>Create a density plot for <code>age</code> with different curves for boys from the <code>city</code> and boys from rural areas (<code>!city</code>).</strong> With a standard plotting device in <code>R</code>:</li>
+</ol>
+<pre class="r"><code>d1 &lt;- boys %&gt;%
+  subset(reg == &quot;city&quot;) %$%
+  density(age)
+d2 &lt;- boys %&gt;%
+  subset(reg != &quot;city&quot;) %$% 
+  density(age)
+
+plot(d1, col = &quot;red&quot;, ylim = c(0, .08)) 
+lines(d2, col = &quot;blue&quot;) </code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>The above plot can also be generated without pipes, but results in an <em>ugly</em> main title. You may edit the title via the <code>main</code> argument in the <code>plot()</code> function.</p>
+<pre class="r"><code>plot(density(boys$age[!is.na(boys$reg) &amp; boys$reg == &quot;city&quot;]), 
+     col = &quot;red&quot;, 
+     ylim = c(0, .08))
+lines(density(boys$age[!is.na(boys$reg) &amp; boys$reg != &quot;city&quot;]), 
+      col = &quot;blue&quot;)</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>With <code>ggplot2</code> everything looks much nicer:</p>
+<pre class="r"><code>boys %&gt;%
+  mutate(area = ifelse(reg == &quot;city&quot;, &quot;city&quot;, &quot;rural&quot;)) %&gt;%
+  filter(!is.na(area)) %&gt;%
+  ggplot(aes(age, fill = area)) +
+  geom_density(alpha = .3) # some transparency</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<hr />
+</div>
+<div id="exercise-11" class="section level2">
+<h2>Exercise 11</h2>
+<hr />
+<ol start="11" style="list-style-type: decimal">
+<li><strong>Create a diverging bar chart for <code>hgt</code> in the <code>boys</code> data set, that displays for every <code>age</code> year that year’s mean height in deviations from the overall average <code>hgt</code></strong></li>
+</ol>
+<p>Let’s not make things too complicated and just focus on <code>ggplot2</code>:</p>
+<pre class="r"><code>boys %&gt;%
+  mutate(Hgt = hgt - mean(hgt, na.rm = TRUE),
+         Age = cut(age, 0:22, labels = 0:21)) %&gt;%
+  group_by(Age) %&gt;%
+  summarize(Hgt = mean(Hgt, na.rm = TRUE)) %&gt;% 
+  mutate(Diff = cut(Hgt, c(-Inf, 0, Inf),
+                    labels = c(&quot;Below Average&quot;, &quot;Above Average&quot;))) %&gt;%
+  ggplot(aes(x = Age, y = Hgt, fill = Diff)) + 
+  geom_bar(stat = &quot;identity&quot;) +
+  coord_flip()</code></pre>
+<p><img src="someexperience_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p>We can clearly see that the average height in the group is reached just before age 7.</p>
+<p>The <code>group_by()</code> and <code>summarize()</code> function are advanced <code>dplyr</code> functions used to return the <code>mean()</code> of deviation <code>Hgt</code> for every group in <code>Age</code>. For example, if we would like the mean and sd of height <code>hgt</code> for every region <code>reg</code> in the <code>boys</code> data, we could call:</p>
+<pre class="r"><code>boys %&gt;%
+  group_by(reg) %&gt;% 
+  summarize(mean_hgt = mean(hgt, na.rm = TRUE), 
+            sd_hgt   = sd(hgt, na.rm = TRUE))</code></pre>
+<pre><code>## # A tibble: 6 × 3
+##   reg   mean_hgt sd_hgt
+##   &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 north    152.    43.8
+## 2 east     134.    43.2
+## 3 west     130.    48.0
+## 4 south    128.    46.3
+## 5 city     126.    46.9
+## 6 &lt;NA&gt;      73.0   29.3</code></pre>
+<p>The <code>na.rm</code> argument ensures that the mean and sd of only the observed values in each category are used.</p>
+<hr />
+</div>
+<div id="exercise-12" class="section level2">
+<h2>Exercise 12</h2>
+<hr />
+<ol start="12" style="list-style-type: decimal">
+<li><strong>Use a pipe to assign values <code>1:5</code> to object <code>x</code> and verify that the object exists.</strong></li>
+</ol>
+<p>Normally, when we use the following code to assign values to an object, we can directly run the assign operator <code>&lt;-</code> as</p>
+<pre class="r"><code>x &lt;- 1:5</code></pre>
+<p>However, when we would like to do this in a pipe, we need to run the <code>assign()</code> function. However, we then would run into the following problem.</p>
+<pre class="r"><code>&quot;x&quot; %&gt;% assign(1:5)
+x</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;x&#39; not found</code></pre>
+<p>The pipe creates a separate, temporary environment where all things <code>%&gt;%</code> take place (environments were discussed in Lecture C). This environment is different from the Global Environment and disappears once the pipe is finished. In other words, we assign <code>1:5</code> to object <code>x</code>, but once we are done assigning, object <code>x</code> is deleted.</p>
+<p>Function <code>assign()</code> is part of a class of functions that uses the current environment (the one that it is called from) to do its business. For such functions, we need to be explicit about the environment we would like the funtion to use:</p>
+<pre class="r"><code>env &lt;- environment()
+&quot;x&quot; %&gt;% assign(1:5, envir = env)
+x</code></pre>
+<pre><code>## [1] 1 2 3 4 5</code></pre>
+<p>Now we have explicitly instructed function <code>assign()</code> to use the Global Environment:</p>
+<pre class="r"><code>environment()</code></pre>
+<pre><code>## &lt;environment: R_GlobalEnv&gt;</code></pre>
+<p>We could also create a new environment to assign values to objects</p>
+<pre class="r"><code>assign.env &lt;- new.env() 
+&quot;x&quot; %&gt;% assign(letters[1:5], envir = assign.env)</code></pre>
+<p>But then we need to call <code>x</code> from <code>assign.env</code></p>
+<pre class="r"><code>assign.env$x</code></pre>
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot;</code></pre>
+<p>because otherwise we would still get <code>x</code> from <code>R_GlobalEnv</code></p>
+<pre class="r"><code>x</code></pre>
+<pre><code>## [1] 1 2 3 4 5</code></pre>
+<p>Bottom line: Don’t use the pipe to assign something to new objects!</p>
+<hr />
+<p>End of Practical</p>
+<hr />
+<div id="useful-references" class="section level4">
+<h4>Useful References</h4>
+<ul>
+<li><a href="https://magrittr.tidyverse.org"><code>magrittr</code></a></li>
+<li><a href="http://r4ds.had.co.nz"><code>R</code> for Data Science</a> - <a href="http://r4ds.had.co.nz/pipes.html">Chapter 18 on pipes</a></li>
+<li><a href="https://ggplot2.tidyverse.org/reference/index.html">The <code>ggplot2</code> reference page</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

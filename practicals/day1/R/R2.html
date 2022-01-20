@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Introduction to R</title>
+
+<script src="R2_files/header-attrs-2.11/header-attrs.js"></script>
+<script src="R2_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="R2_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="R2_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="R2_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="R2_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="R2_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="R2_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="R2_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="R2_files/navigation-1.1/tabsets.js"></script>
+<link href="R2_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="R2_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Introduction to R</h1>
+
+</div>
+
+
+<style type="text/css">
+  
+body{ /* Normal  */
+  font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 18px;
+  color: DarkBlue;
+}
+h1 { /* Header 1 */
+  font-size: 18px;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+  font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+  font-size: 14px;
+}
+</style>
+<hr />
+<p>We use the following packages in this Practical:</p>
+<pre class="r"><code>library(MASS)     # for robust regression
+library(dplyr)    # data wrangling
+library(magrittr) # pipes
+library(ggplot2)  # plotting device
+library(DAAG)     # for the elastic1 and elastic2 data sets</code></pre>
+<p>In this practical you will need to perform regression analysis and create plots with ggplot2. I give you some examples and ask from you to apply the techniques I demonstrate. For some exercises I give you the solution (e.g. the resulting graph) and the interpretation. The exercise is then to provide to me the code that generates the solution and give me the interpretation for the exercises where this is omitted.</p>
+<p>Feel free to ask me, if you have questions.</p>
+<p>All the best,</p>
+<p>Gerko</p>
+<hr />
+<div id="models-and-output" class="section level1">
+<h1>Models and output</h1>
+<hr />
+<div id="exercise-1" class="section level2">
+<h2>Exercise 1</h2>
+<hr />
+<ol style="list-style-type: decimal">
+<li><strong>Fit the following linear models on the <code>anscombe</code> data:</strong></li>
+</ol>
+<p>The <code>anscombe</code> data was discussed in the lecture and holds 4 pairs of variables that yield the same statistical properties (i.e. correlations and regression parameters) when analyzed.</p>
+<ul>
+<li><code>y1</code> predicted by <code>x1</code> - stored in object <code>fit1</code></li>
+<li><code>y2</code> predicted by <code>x2</code> - stored in object <code>fit2</code></li>
+<li><code>y3</code> predicted by <code>x3</code> - stored in object <code>fit3</code></li>
+<li><code>y4</code> predicted by <code>x4</code> - stored in object <code>fit4</code></li>
+</ul>
+<pre class="r"><code>fit1 &lt;- anscombe %$%
+  lm(y1 ~ x1)
+fit2 &lt;- anscombe %$%
+  lm(y2 ~ x2)
+fit3 &lt;- anscombe %$%
+  lm(y3 ~ x3)
+fit4 &lt;- anscombe %$%
+  lm(y4 ~ x4)</code></pre>
+<hr />
+</div>
+<div id="exercise-2" class="section level2">
+<h2>Exercise 2</h2>
+<hr />
+<ol start="2" style="list-style-type: decimal">
+<li><strong>`Display a data frame with the coefficients of the 4 fitted objects from Exercise 1</strong></li>
+</ol>
+<p>Use the following code to markup your output into a nice format</p>
+<pre class="r"><code>output &lt;- data.frame(fit1 = coef(fit1),
+                     fit2 = coef(fit2),
+                     fit3 = coef(fit3),
+                     fit4 = coef(fit4))
+row.names(output) &lt;- names(coef(fit1))</code></pre>
+<pre class="r"><code>output</code></pre>
+<pre><code>##                  fit1     fit2      fit3      fit4
+## (Intercept) 3.0000909 3.000909 3.0024545 3.0017273
+## x1          0.5000909 0.500000 0.4997273 0.4999091</code></pre>
+<hr />
+</div>
+<div id="exercise-3" class="section level2">
+<h2>Exercise 3</h2>
+<hr />
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Inspect the estimates for the four models in the <code>output</code> object. What do you conclude?</strong></li>
+</ol>
+<pre class="r"><code># These estimates are very similar. </code></pre>
+<hr />
+</div>
+</div>
+<div id="assumptions" class="section level1">
+<h1>Assumptions</h1>
+<p>There are four key assumptions about the use of linear regression models. In short, we assume the following:</p>
+<p><em>1</em> The outcome to have a <strong>linear relation</strong> with the predictors and the predictor relations to be <strong>additive</strong>. - the expected value for the outcome is a straight-line function of each predictor, given that the others are fixed. - the slope of each line does not depend on the values of the other predictors - the effects of the predictors on the expected value are additive</p>
+<p><span class="math display">\[ y = \alpha + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon\]</span> <em>2</em> The residuals are statistically <strong>independent</strong>. If this assumption does not hold, then it would mean that the fit for one case would depend on the fit for another case. That is not allowed.</p>
+<p><em>3</em> The residual <strong>variance is constant</strong> - accross the expected values - across any of the predictors</p>
+<p><em>4</em> The residuals are <strong>normally distributed</strong> with mean <span class="math inline">\(\mu_\epsilon = 0\)</span></p>
+<hr />
+<div id="inspect-fit1" class="section level2">
+<h2>Inspect <code>fit1</code></h2>
+<hr />
+<div id="exercise-4" class="section level3">
+<h3>Exercise 4</h3>
+<hr />
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Inspect the assumptions for the first model. What do you think?</strong></li>
+</ol>
+<p>HINT: use <code>plot()</code> and use the plots you’ve created in exercises 5-7.</p>
+<pre class="r"><code>plot(fit1)</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-7-1.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-7-2.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-7-3.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-7-4.png" width="672" /></p>
+<ul>
+<li>The data follows a linear trend, although the loess curve shows some deviations from linearity. All in all, there are only 11 points, so this slight deviations is not something that would worry me.</li>
+<li>Taking into account that there are only a few observations, I would argue that the residuals seem normally distributed from the <code>Normal Q-Q</code> plot.</li>
+<li>The residual variance seems constant over the level of the fitted values (i.e. homoscedastic residual variance) as seen in <code>Residuals vs. Fitted</code> plot and the <code>Scale-Location</code> plot. Again, the dip in the <code>Scale-Location</code> plot can easily be explained by the small sample size and the deviation should be taken with a grain of salt.</li>
+<li>No special remarks with respect to leverage and cook’s distance, although case #3 would need to be at least investigated.</li>
+</ul>
+<div id="cooks-distance" class="section level4">
+<h4>Cook’s Distance</h4>
+<p>Cook’s distance is a measure that indicates the influence for each case on the fitted model. It is a function of the residual and the leverage. Leverage would be the extend to which a case would influence the obtained predicted values. Examples of values that have large leverage would be cases without whom there would be a completely different regression estimate, or cases with whom the estimate remains exactly the same (that would be cases that are exactly on the regression line, but then far away from the center of the cloud of points.</p>
+<p>Having a high residual and high leverage would result in a larger Cook’s distance. Likewise, low residual or low leverage would make it <em>harder</em> to obtain a larger Cook’s distance. Hence, the funnel shape in the plots for the boundaries .5 and 1 for Cook’s distance.</p>
+<hr />
+</div>
+</div>
+</div>
+<div id="inspect-fit2" class="section level2">
+<h2>Inspect <code>fit2</code></h2>
+<hr />
+<div id="exercise-5" class="section level3">
+<h3>Exercise 5</h3>
+<hr />
+<ol start="5" style="list-style-type: decimal">
+<li><strong>Inspect the assumptions for the model <code>fit2</code>. What do you think?</strong></li>
+</ol>
+<pre class="r"><code>#- The data does not follow a linear trend, the deviation would definitely worry me. 
+#- The residuals seem non-normally distributed, especially in the tails from the `Normal Q-Q` plot. 
+#- I could not still argue that the residual variance seems more-or-less constant over the level of the fitted values. The residual variance is heteroscedastic.  
+#- Case 8 has quite some leverage and a large residual. It&#39;s cook&#39;s distance is greater than `.5`. 
+
+plot(fit2)</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-8-3.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-8-4.png" width="672" /></p>
+<hr />
+</div>
+</div>
+<div id="inspect-fit3" class="section level2">
+<h2>Inspect <code>fit3</code></h2>
+<hr />
+<div id="exercise-6" class="section level3">
+<h3>Exercise 6</h3>
+<hr />
+<ol start="6" style="list-style-type: decimal">
+<li><strong>Inspect the assumptions for the model <code>fit3</code>. What do you think?</strong></li>
+</ol>
+<pre class="r"><code>#- The data follows a perfect linear trend, except for case #3 
+#- The residuals seem normally distributed, except for case #3
+#- I could not still argue that the residual variance seems more-or-less constant over the level of the fitted values. The residual variance is heteroscedastic. However, if case #3 were omitted, there are no residuals: every point falls perfectly on the regression line. 
+#- Case 3 has quite some leverage, but not as large as other cases. Case #3 has the largest residual. It&#39;s cook&#39;s distance is greater than `1`. 
+
+plot(fit3)</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-9-1.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-9-2.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-9-3.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-9-4.png" width="672" /></p>
+<hr />
+</div>
+</div>
+<div id="inspect-fit4" class="section level2">
+<h2>Inspect <code>fit4</code></h2>
+<hr />
+<div id="exercise-7" class="section level3">
+<h3>Exercise 7</h3>
+<hr />
+<ol start="7" style="list-style-type: decimal">
+<li><strong>Inspect the assumptions for the model <code>fit4</code>. What do you think?</strong></li>
+</ol>
+<pre class="r"><code>#- The data follows no trend. You&#39;d be an idiot to perform linear regression on this set. 
+#- The residuals seem normally distributed
+#- I could not still argue that the residual variance seems more-or-less constant over the level of the fitted values. The residual variance does not exist for fitted values other than 7!
+#- Case 8 has a leverage of 1; hence it is omitted from most of the plots. The plot over the remaining points is redundant.  
+
+plot(fit4)</code></pre>
+<pre><code>## Warning: not plotting observations with leverage one:
+##   8</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-10-1.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-10-2.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-10-3.png" width="672" /><img src="R2_files/figure-html/unnamed-chunk-10-4.png" width="672" /></p>
+<hr />
+</div>
+</div>
+</div>
+<div id="estimation-and-prediction" class="section level1">
+<h1>Estimation and prediction</h1>
+<hr />
+<div id="exercise-8" class="section level2">
+<h2>Exercise 8</h2>
+<hr />
+<p>The data sets <code>elastic1</code> and <code>elastic2</code> from the package <code>DAAG</code> were obtained using the same apparatus, including the same rubber band, as the data frame <code>elasticband</code>.</p>
+<ol start="8" style="list-style-type: decimal">
+<li><strong>Using a different symbol and/or a different color, plot the data from the two data frames <code>elastic1</code> and <code>elastic2</code> on the same graph. Do the two sets of results appear consistent?</strong></li>
+</ol>
+<pre class="r"><code>elastic &lt;- rbind(elastic1, elastic2) 
+elastic$source &lt;- c(rep(&quot;Elastic1&quot;, nrow(elastic1)), 
+                    rep(&quot;Elastic2&quot;, nrow(elastic2)))
+
+elastic %&gt;%
+  ggplot(aes(stretch, distance, colour = source)) +
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>The results seem very consistent: Data set <code>elastic2</code> has more observations over a larger range, but both sets result in roughly the same regression line. Data set <code>elastic1</code> seems to have an <em>odd-one-out</em> value.</p>
+<hr />
+</div>
+<div id="exercise-9" class="section level2">
+<h2>Exercise 9</h2>
+<hr />
+<ol start="9" style="list-style-type: decimal">
+<li><strong>For each of the data sets <code>elastic1</code> and <code>elastic2</code>, determine the regression of distance on stretch (i.e. model the outcome <code>distance</code> on the predictor <code>stretch</code>). In each case determine:</strong></li>
+</ol>
+<ul>
+<li>fitted values and standard errors of fitted values and</li>
+<li>the <span class="math inline">\(R^2\)</span> statistic.</li>
+</ul>
+<p>Compare the two sets of results. What is the key difference between the two sets of data?</p>
+<p>First we run the two models:</p>
+<pre class="r"><code>fit1 &lt;- 
+  elastic1 %$%
+  lm(distance ~ stretch)
+
+fit2 &lt;- 
+  elastic2 %$%
+  lm(distance ~ stretch)</code></pre>
+<p>and then we compare the fitted values</p>
+<pre class="r"><code>fit1 %&gt;% predict(se.fit = TRUE)</code></pre>
+<pre><code>## $fit
+##        1        2        3        4        5        6        7 
+## 183.1429 235.7143 196.2857 209.4286 170.0000 156.8571 222.5714 
+## 
+## $se.fit
+## [1]  6.586938 10.621119  5.891537  6.586938  8.331891 10.621119  8.331891
+## 
+## $df
+## [1] 5
+## 
+## $residual.scale
+## [1] 15.58754</code></pre>
+<pre class="r"><code>fit2 %&gt;% predict(se.fit = TRUE)</code></pre>
+<pre><code>## $fit
+##         1         2         3         4         5         6         7         8 
+##  77.58333 196.58333 137.08333 166.83333 256.08333 226.33333 107.33333 226.33333 
+##         9 
+## 285.83333 
+## 
+## $se.fit
+## [1] 6.740293 3.520003 4.358744 3.635444 5.060323 4.064550 5.453165 4.064550
+## [9] 6.296773
+## 
+## $df
+## [1] 7
+## 
+## $residual.scale
+## [1] 10.44202</code></pre>
+<p>We see that <code>fit1</code> (based on <code>elastic1</code>) has a larger residual standard deviation (i.e. <code>$residual.scale</code>). The residuals are the deviations for the observations from the regression line, where the regression line would indicate the conditional expectation of the outcome based on the predictor(s)</p>
+<p>To get the <span class="math inline">\(R^2\)</span> we can run a summary on the fitted models:</p>
+<pre class="r"><code>fit1 %&gt;% summary()</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = distance ~ stretch)
+## 
+## Residuals:
+##        1        2        3        4        5        6        7 
+##  -0.1429 -18.7143  -7.2857  -1.4286   8.0000  -6.8571  26.4286 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) -119.143     70.943  -1.679  0.15391   
+## stretch        6.571      1.473   4.462  0.00663 **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 15.59 on 5 degrees of freedom
+## Multiple R-squared:  0.7992, Adjusted R-squared:  0.7591 
+## F-statistic: 19.91 on 1 and 5 DF,  p-value: 0.006631</code></pre>
+<pre class="r"><code>fit2 %&gt;% summary()</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = distance ~ stretch)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.0833  -7.0833  -0.5833   5.1667  20.1667 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -100.9167    15.6102  -6.465 0.000345 ***
+## stretch        5.9500     0.3148  18.899 2.89e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 10.44 on 7 degrees of freedom
+## Multiple R-squared:  0.9808, Adjusted R-squared:  0.978 
+## F-statistic: 357.2 on 1 and 7 DF,  p-value: 2.888e-07</code></pre>
+<p>The summary of the fitted model starts with the model call and continues with the residuals. If there is a sufficient number of cases, the distributional properties of the residuals are shown. That would allow us to see if the residuals are non-normally distributed.</p>
+<p>The next part of these outputs is the <code>Coefficients</code> table. This table holds the regression parameters, the standard error (sd of the sampling distribution of the estimate), the corresponding t-value for the test whether the regression parameter is equal to zero, and the p-value. The p-value is the probability of finding a larger absolute effect.</p>
+<p>These summary outputs also give us the proportion of explained variance in the outcome by the model (<span class="math inline">\(R^2\)</span> - which is the square of <span class="math inline">\(R\)</span>) and the adjusted version of <span class="math inline">\(R^2\)</span>. A higher <span class="math inline">\(R^2\)</span> may indicate a better fit, although the number of parameters used in the model could be a factor in the quality of fit. If you’d use an infinite number of columns you always have a perfect model, as all cases can be perfectly modeled by all information. This is also an inefficient approach; there should be a far more parsimonious model. That is, there should exist a model that uses fewer parameters, but explains approximately the same information. The adjusted <span class="math inline">\(R^2\)</span> therefore takes the number of parameters into account and penalizes overparametrized models.</p>
+<p>Finally, the overall ANOVA is given which tests whether the variance explained by the model is larger than the variance explained by the residuals (i.e. not explained by the model). For a single predictor the ANOVA p-value would mimic the corresponding paramater p-value, because both test are then equivalent.</p>
+<p>We can see the <span class="math inline">\(R^2\)</span> in the output or we can grab the <span class="math inline">\(R^2\)</span> directly from the object without a pipe</p>
+<pre class="r"><code>summary(fit1)$r.squared</code></pre>
+<pre><code>## [1] 0.7992446</code></pre>
+<pre class="r"><code>summary(fit2)$r.squared</code></pre>
+<pre><code>## [1] 0.9807775</code></pre>
+<p>The model based on <code>elastic2</code> has smaller standard errors and a much larger <span class="math inline">\(R^2\)</span>. This is due to the larger range of values in <code>elastic2</code>, and the absence of an outlier.</p>
+<hr />
+</div>
+<div id="exercise-10" class="section level2">
+<h2>Exercise 10</h2>
+<hr />
+<ol start="10" style="list-style-type: decimal">
+<li><strong>Study the <em>residual vs leverage</em> plots for both models. Hint use <code>plot()</code> on the fitted object</strong></li>
+</ol>
+<pre class="r"><code>fit1 %&gt;% plot(which = 5) #the fifth plot is the residuals vs leverage plot</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>fit2 %&gt;% plot(which = 5)</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+<p>For <code>elastic1</code>, case 2 has the largest influence on the estimation. However, it is not the case with the largest residual:</p>
+<pre class="r"><code>fit1$residuals</code></pre>
+<pre><code>##           1           2           3           4           5           6 
+##  -0.1428571 -18.7142857  -7.2857143  -1.4285714   8.0000000  -6.8571429 
+##           7 
+##  26.4285714</code></pre>
+<p>As we can see, case 7 has the largest residual.</p>
+<hr />
+<p>Because there is a single value that influences the estimation and is somewhat different from the other values, a robust form of regression may be advisable to obtain more stable estimates. When robust methods are used, we refrain from omitting a suspected outlier from our analysis. In general, with robust analysis, influential cases that are not conform the other cases receive less weight in the estimation procedure then under non-robust analysis.</p>
+<hr />
+</div>
+</div>
+<div id="robust-estimation" class="section level1">
+<h1>Robust estimation</h1>
+<hr />
+<div id="exercise-11" class="section level2">
+<h2>Exercise 11</h2>
+<hr />
+<ol start="11" style="list-style-type: decimal">
+<li><strong>Use the robust regression function <code>rlm()</code> from the <code>MASS</code> package to fit lines to the data in <code>elastic1</code> and <code>elastic2</code>. Compare the results with those from use of <code>lm()</code>:</strong></li>
+</ol>
+<ul>
+<li>residuals</li>
+<li>regression coefficients,</li>
+<li>standard errors of coefficients,</li>
+<li>plots of residuals against fitted values.</li>
+</ul>
+<p>First, we run the same models again with <code>rlm()</code></p>
+<pre class="r"><code>fit1.rlm &lt;- 
+  elastic1 %$%
+  rlm(distance ~ stretch)
+
+fit2.rlm &lt;- 
+  elastic2 %$%
+  rlm(distance ~ stretch)</code></pre>
+<p>and then we look at the coefficients and the residuals</p>
+<pre class="r"><code>data.frame(lm = coef(fit1), 
+           rlm = coef(fit1.rlm))</code></pre>
+<pre><code>##                      lm        rlm
+## (Intercept) -119.142857 -95.747207
+## stretch        6.571429   6.039709</code></pre>
+<pre class="r"><code>data.frame(lm = coef(fit2), 
+           rlm = coef(fit2.rlm))</code></pre>
+<pre><code>##                    lm         rlm
+## (Intercept) -100.9167 -103.055008
+## stretch        5.9500    5.975157</code></pre>
+<p>We see that the coefficients for <code>elastic1</code> are different for <code>lm()</code> and <code>rlm()</code>. The coefficients for <code>elastic2</code> are very similar.</p>
+<p>To study the standard errors of the coefficients:</p>
+<pre class="r"><code>data.frame(lm = summary(fit1)$coefficients[, &quot;Std. Error&quot;], 
+           rlm = summary(fit1.rlm)$coefficients[, &quot;Std. Error&quot;])</code></pre>
+<pre><code>##                    lm       rlm
+## (Intercept) 70.943496 60.690050
+## stretch      1.472884  1.260009</code></pre>
+<pre class="r"><code>data.frame(lm = summary(fit2)$coefficients[, &quot;Std. Error&quot;], 
+           rlm = summary(fit2.rlm)$coefficients[, &quot;Std. Error&quot;])</code></pre>
+<pre><code>##                     lm        rlm
+## (Intercept) 15.6101986 14.4955054
+## stretch      0.3148387  0.2923567</code></pre>
+<p>The standard errors for the estimates for <code>elastic1</code> have become much smaller with <code>rlm()</code> compared to standard <code>lm()</code> estimation. The standard errors for <code>elastic2</code> are very similar.</p>
+<p>To study the residuals:</p>
+<pre class="r"><code>data.frame(lm = residuals(fit1), 
+           rlm = residuals(fit1.rlm))</code></pre>
+<pre><code>##            lm         rlm
+## 1  -0.1428571   0.9205815
+## 2 -18.7142857 -13.3970925
+## 3  -7.2857143  -5.1588370
+## 4  -1.4285714   1.7617445
+## 5   8.0000000   8.0000000
+## 6  -6.8571429  -7.9205815
+## 7  26.4285714  30.6823260</code></pre>
+<pre class="r"><code>data.frame(lm = residuals(fit2), 
+           rlm = residuals(fit2.rlm))</code></pre>
+<pre><code>##            lm        rlm
+## 1  -6.5833333 -5.1997008
+## 2  -0.5833333  0.2971601
+## 3 -10.0833333 -8.9512703
+## 4  20.1666667 21.1729449
+## 5  -7.0833333 -6.4544094
+## 6  -9.3333333 -8.5786247
+## 7   6.6666667  7.9245144
+## 8   1.6666667  2.4213753
+## 9   5.1666667  5.6698058</code></pre>
+<p>The residual trend for both models is very similar. Remember that large residuals will still be large under robust analyses; they are only given less influence in the overall estimation of the modeling parameters.</p>
+<hr />
+<p>To plot the residuals against the fitted values:</p>
+<pre class="r"><code>plot(fit1, which = 1, add.smooth = &quot;FALSE&quot;, col = &quot;blue&quot;, main = &quot;elastic1&quot;)
+points(residuals(fit1.rlm) ~ fitted(fit1.rlm), col = &quot;orange&quot;)</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre class="r"><code>plot(fit2, which = 1, add.smooth = &quot;FALSE&quot;, col = &quot;blue&quot;, main = &quot;elastic2&quot;)
+points(residuals(fit2.rlm) ~ fitted(fit2.rlm), col = &quot;orange&quot;)</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
+<p>The case 2 residual in elastic1 is smaller in the robust regression. This is because the case had less weight in the <code>rlm()</code> estimation of the coefficients than in the ordinary <code>lm()</code> regression.</p>
+<hr />
+</div>
+<div id="exercise-12" class="section level2">
+<h2>Exercise 12</h2>
+<hr />
+<ol start="12" style="list-style-type: decimal">
+<li><strong>Use the <code>elastic2</code> variable <code>stretch</code> to obtain predictions on the robust model fitted on <code>elastic1</code>.</strong></li>
+</ol>
+<pre class="r"><code>pred &lt;- predict.lm(fit1.rlm, newdata = data.frame(stretch = elastic2$stretch))</code></pre>
+<hr />
+</div>
+<div id="exercise-13" class="section level2">
+<h2>Exercise 13</h2>
+<hr />
+<ol start="13" style="list-style-type: decimal">
+<li><strong>Now make a scatterplot to investigate similarity between plot the predicted values against the observed values for <code>elastic2</code></strong></li>
+</ol>
+<pre class="r"><code>new.dat &lt;- data.frame(stretch = elastic2$stretch, 
+                      distance = c(elastic2$distance, pred))
+
+new.dat$source &lt;- c(rep(&quot;original&quot;, nrow(elastic2)), 
+                    rep(&quot;predicted&quot;, nrow(elastic2)))
+
+new.dat %&gt;%
+  ggplot(aes(stretch, distance, colour = source)) +
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>The predicted values are very similar to the observed values:</p>
+<pre class="r"><code>data.frame(distance = elastic2$distance, predicted = pred) %&gt;%
+  ggplot(aes(distance, predicted)) + 
+  geom_point()</code></pre>
+<p><img src="R2_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p>They do not strictly follow the straight line because there is some modeling error: we use <code>elastic1</code>’s model to predict <code>elastic2</code>’s distance [error source 1] and we compare those predictions to <code>elastic2</code>’s observed distance [error source 2]. However, if you consider the modeling, these predictions are very accurate and have high correlations with the observed values:</p>
+<pre class="r"><code>data.frame(distance = elastic2$distance, predicted = pred) %&gt;%
+  cor() </code></pre>
+<pre><code>##            distance predicted
+## distance  1.0000000 0.9903421
+## predicted 0.9903421 1.0000000</code></pre>
+<hr />
+<p>End of <strong>Exercise in R</strong></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

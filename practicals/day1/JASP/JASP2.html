@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Regression in JASP</title>
+
+<script src="JASP2_files/header-attrs-2.11/header-attrs.js"></script>
+<script src="JASP2_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="JASP2_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="JASP2_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="JASP2_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="JASP2_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="JASP2_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="JASP2_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="JASP2_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="JASP2_files/navigation-1.1/tabsets.js"></script>
+<link href="JASP2_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="JASP2_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Regression in JASP</h1>
+
+</div>
+
+
+<style type="text/css">
+  
+body{ /* Normal  */
+  font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 18px;
+  color: DarkBlue;
+}
+h1 { /* Header 1 */
+  font-size: 18px;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+  font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+  font-size: 14px;
+}
+</style>
+<hr />
+<p>In this <code>JASP</code> exercise, we will get to know the <code>JASP</code> regression procedure. If you have any questions about this exercise, <a href="mailto:G.Vink@uu.nl">please contact me</a>.</p>
+<p>Let’s get started.</p>
+<p>-Gerko Vink</p>
+<hr />
+<div id="the-album-sales-data" class="section level1">
+<h1>The <code>Album Sales</code> data</h1>
+<div id="exercise-1" class="section level2">
+<h2>Exercise 1</h2>
+<strong>1</strong> Open the <code>Album Sales</code> data set and remove the executed analyses. <br><br>
+<center>
+<img src="JASP2_img/1.%20openanddelete.gif" />
+</center>
+<p><br><br></p>
+<hr />
+</div>
+</div>
+<div id="exploring-correlations" class="section level1">
+<h1>Exploring correlations</h1>
+<div id="exercise-2" class="section level2">
+<h2>Exercise 2</h2>
+<strong>2</strong> Study the Pearson’s correlations between the columns in the data. Ask for <code>report significance</code> and <code>plot heatmap</code>. <br><br>
+<center>
+<img src="JASP2_img/2.%20correlation.gif" />
+</center>
+<p><br><br></p>
+<p>We can see that some of the correlations are quite substantial. For example, the correlations between <code>adverts</code> and <code>sales</code> and <code>sales</code> and <code>airplay</code> are almost <span class="math inline">\(\rho = .6\)</span>. These correlations are also significant. The significance test for correlations tests whether the observed value for the statistic differs from a correlation of <span class="math inline">\(\rho = 0\)</span>. The null-hypothesis would be that there is no correlation between two columns, which is equivalent to a correlation of <span class="math inline">\(\rho = 0\)</span>.</p>
+<p>Studying the correlations is often a good idea to get some feeling with the <em>flow of information</em> in a data set. For example, certain clusters of variables may be more related than other clusters. This is important to be aware of, because of this relation is too high, the columns in the data may be multicollinear.</p>
+</div>
+<div id="multicollinearity" class="section level2">
+<h2>Multicollinearity</h2>
+<p>Multicollinearity means that two or more predictors in a multiple regression model (i.e. a model with one continuous outcome and more than one predictor) are strongly correlated. If the correlation between two or more regressors is perfect, we speak of supercollinearity. This happens with copies of columns or with compositional data where more than one column would sum up to another column. The columns in the data are then linearly dependent.</p>
+<p>With multicollinearity, estimates in regression analysis may exhibit unnecessarily large variance. That is because the multicollinear columns in the data would then <em>bring</em> the same information to the model and pin-pointing the unique contribution of these columns is challenging to estimate.</p>
+<p>With supercollinearity, estimation is impossible with standard least-squares estimation. The reason is that the variance-covariance matrix of the design matrix (the predictor columns) is not positive definite.</p>
+</div>
+<div id="heatmap" class="section level2">
+<h2>Heatmap</h2>
+<p>The heatmap shows the same information as the table, but in a visual display. Higher correlations are depicted by darker colours. Heatmaps are a nice source of visualization, especially when studying the pattern of correlations between many variables.</p>
+</div>
+<div id="pairwise-correlations" class="section level2">
+<h2>Pairwise correlations</h2>
+<p>Pairwise correlations are a good idea when not all values are observed. The correlation coefficient is then calculated based on the jointly observed pairs. This maximizes the number of observed cells that are used for calculating the statistics.</p>
+<hr />
+</div>
+</div>
+<div id="running-regression" class="section level1">
+<h1>Running regression</h1>
+<div id="exercise-3" class="section level2">
+<h2>Exercise 3</h2>
+<p><strong>3</strong> Perform a regression analysis with <code>sales</code> as the dependent (outcome) variable and <code>adverts</code> and <code>airplay</code> as the independent (predictor) variables. Choose the following output options:</p>
+<p><em>a</em> Under <code>Statistics</code> choose</p>
+<ul>
+<li>95% Confidence intervals</li>
+<li>All case-wise diagnostics for the residuals</li>
+</ul>
+<p><em>b</em> Under <code>Plots</code> choose</p>
+<ul>
+<li>Residuals vs. predicted</li>
+<li>QQ-plot standardized residuals</li>
+<li>Residuals histogram</li>
+</ul>
+<br><br>
+<center>
+<img src="JASP2_img/3.%20regression.gif" />
+</center>
+<p><br><br></p>
+<hr />
+</div>
+</div>
+<div id="interpreting-the-output" class="section level1">
+<h1>Interpreting the output</h1>
+<p>For convenience I show here the output of the regression analysis.</p>
+<center>
+<img src="JASP2_img/4.%20model.png" style="width:100.0%" />
+</center>
+<hr />
+<div id="model-summary" class="section level2">
+<h2>Model summary</h2>
+<p>The first table shows the multiple correlation (<span class="math inline">\(R\)</span>), the proportion of explained variance in the outcome by the model (<span class="math inline">\(R^2\)</span> - which is the square of <span class="math inline">\(R\)</span>) and the adjusted version of <span class="math inline">\(R^2\)</span>. A higher <span class="math inline">\(R^2\)</span> may indicate a better fit, although the number of parameters used in the model could be a factor in the quality of fit. If you’d use an infinite number of columns you always have a perfect model, as all cases can be perfectly modeled by all information. This is also an inefficient approach; there should be a far more parsimonious model. That is, there should exist a model that uses fewer parameters, but explains approximately the same information. The adjusted <span class="math inline">\(R^2\)</span> therefore takes the number of parameters into account and penalizes overparametrized models.</p>
+<p>Finally the Root Mean Squared Error is shown, which can be considered as a measure of how erroneous the model’s prediction (fitted values) are. A larger RMSE indicates higher residuals, which would mean a worse model fit. Theoretically, an RMSE of zero would indicate a perfect model, as would <span class="math inline">\(R^2=1\)</span></p>
+<p><span class="math inline">\(H_0\)</span> indicates an intercept-only model, i.e. the simplest model.</p>
+<hr />
+</div>
+<div id="anova" class="section level2">
+<h2>ANOVA</h2>
+<p>If we consider the regression model as a variance problem, the we can divide this variance into two components:</p>
+<ol style="list-style-type: decimal">
+<li>variance explained by the model paramaters</li>
+<li>variance not explained by the model paramaters. we call these <em>left-overs</em> the residuals.</li>
+</ol>
+<p>When the model would explain sufficient variance, when compared to the residuals, then it would be significant. Significance in this case would mean that the model would explain more than the residuals and could be deemed informative about the outcome. When the residuals explain more abbout the outcome than the model, then the model should off course not be deemed significant or worthwile. In this case the ANalysis Of VAriance is highly significant, meaning that the mean squared difference <code>mean square</code> of the regression parameters is much larger than the <code>mean square</code> of the residuals. As a matter of fact, the ratio is equal to the F-statistic <span class="math inline">\(F = \frac{407762.061}{2438.720}=167.203\)</span>.</p>
+<hr />
+</div>
+<div id="coefficients" class="section level2">
+<h2>Coefficients</h2>
+<p>The intercept is the point where the regression line would intersect with the y-axis when the predictor parameters are set to 0. For the null-model this means that the intercept equals the expected value (the mean) of <code>sales</code>.</p>
+<p>The executed linear regression model has more parameters. The intercept is now different, because there are predictors involved. The intercept is not the most interesting parameter in this list. The parameters for <code>adverts</code> and <code>airplay</code> allow us to infer the effect of the predictors on the outcome <code>sales</code>. All parameters are significant, meaning that their values differ from 0, which is the t-test that is carried out.</p>
+<p>Standardized coefficients show the regression estimates for a standardized design matrix; this would allow us to infer the relative contribution to the model for each parameter. A higher standardized coefficient would then indicate a larger contribution because all variables are scaled to be measured in the same units by means of standardization.</p>
+<hr />
+</div>
+</div>
+<div id="assumptions-in-linear-regression" class="section level1">
+<h1>Assumptions in linear regression</h1>
+<p>There are four key assumptions about the use of linear regression models. In short, we assume the following:</p>
+<p><em>1</em> The outcome to have a <strong>linear relation</strong> with the predictors and the predictor relations to be <strong>additive</strong>. - the expected value for the outcome is a straight-line function of each predictor, given that the others are fixed. - the slope of each line does not depend on the values of the other predictors - the effects of the predictors on the expected value are additive</p>
+<p><span class="math display">\[ y = \alpha + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon\]</span> <em>2</em> The residuals are statistically <strong>independent</strong>. If this assumption does not hold, then it would mean that the fit for one case would depend on the fit for another case. That is not allowed.</p>
+<p><em>3</em> The residual <strong>variance is constant</strong> - accross the expected values - across any of the predictors</p>
+<p><em>4</em> The residuals are <strong>normally distributed</strong> with mean <span class="math inline">\(\mu_\epsilon = 0\)</span></p>
+<hr />
+</div>
+<div id="plots" class="section level1">
+<h1>Plots</h1>
+<p>The plots allow us to infer whether the assumptions have been met.</p>
+<hr />
+<div id="residuals-vs.-predictions" class="section level2">
+<h2>Residuals vs. predictions</h2>
+<p>The following plot shows the relation of the residuals with the predicted values. The residuals are the distance from the observations to the fitted regression line, also known as the variance that could not be modeled. The contribution of all predictors comes together in the predicted values.</p>
+<center>
+<img src="JASP2_img/5.%20resvsfittedval.png" style="width:50.0%" />
+</center>
+<p>We would assume that the residuals would be more-or less equally distributed along the axis of the predicted values. If that is not the case, then assumptions are violated. For example, if at certain levels of the predicted values all residuals would be positive, while at other locations of the predicted values all residuals would be negative, then the residuals cannot be deemed independent. Also, when the <em>bandwith</em> of the residuals is not equal across the levels of the predicted values, then the residuals would not have constant variance.</p>
+<p>In our case there is no indication for non-constant residual variance (excluding the case with larger positive residual at the <code>200</code> predicted value mark) or dependent residuals.</p>
+<p>The axis with standardized residual shows the values for the residuals after standardization. The process of standardization makes the vector of residuals such that the standardized residuals have mean zero and variance 1. That conforms to a standard normal (<span class="math inline">\(z\)</span>) distribution for which we know the theoretical properties.</p>
+<hr />
+</div>
+<div id="residual-histogram" class="section level2">
+<h2>Residual histogram</h2>
+<center>
+<img src="JASP2_img/6.%20density.png" style="width:50.0%" />
+</center>
+<p>The residuals seem indeed normally distributed. Perhaps there is a bit of deviations from normality in the tails. Note that the mean of the standardized residuals is indeed zero.</p>
+<hr />
+</div>
+<div id="qqplot" class="section level2">
+<h2>QQplot</h2>
+<p>To further evaluate the normality of the residuals, we can create a QQ-plot.</p>
+<center>
+<img src="JASP2_img/7.%20QQ.png" style="width:50.0%" />
+</center>
+<p>A QQ-plot is a device where observations are plotted against theory. In other words, we plot the standardized residuals (what we see) against the theoretical quantiles (what we would expect from theory). If both are equivalent, all observations fall on the diagonal line.</p>
+<p>In our case there is only slight deviation from normality in the tails. Bot not enough to violate the assumptions.</p>
+<hr />
+</div>
+<div id="checking-the-assumption-of-linearity" class="section level2">
+<h2>Checking the assumption of linearity</h2>
+<p>To check this assumption, one could plot the outcome vs. the predictors, or for example purposely fit a non-linear model to check if the fit would improve. An often used strategy is to fit a quadratic model. If the quadratic term is non-significant there is evidence that a linear model would fit the data better than a quadratic model and linear model would be more suitable.</p>
+<hr />
+</div>
+</div>
+<div id="casewise-diagnostics" class="section level1">
+<h1>Casewise diagnostics</h1>
+<p>The last table that we asked for contains casewise measures. These measures allow us to spot cases that are different from other cases, or from the average case. For example, a large (standardized) residual would indicate a larger deviation from the average (or from the conditionally expected value).</p>
+<p>Cook’s distance is a measure that indicates the influence for each case on the fitted model. It is a function of the residual and the leverage. Leverage would be the extend to which a case would influence the obtained predicted values. Examples of values that have large leverage would be cases without whom there would be a completely different regression estimate, or cases with whom the estimate remains exactly the same (that would be cases that are exactly on the regression line, but then far away from the center of the cloud of points.</p>
+<p>Having a high residual and high leverage would result in a larger Cook’s distance. Likewise, low residual or low leverage would make it <em>harder</em> to obtain a larger Cook’s distance.</p>
+<p>In our case, there are no high Cook’s distance. As a rule of thumb, a Cook’s distance larger than 1 would definitely warrant further inspection. Personally, I always study cases that have a far higher Cook’s distance than other cases, even if this Cook’s distance does not satisfy the arbitrary rule of thumb. In this data, case <code>169</code> seems most influential: it has a high residual and a high Cook’s distance, when compared to other cases.</p>
+<hr />
+</div>
+<div id="challenge" class="section level1">
+<h1>Challenge</h1>
+<p>Use the <a href="../mammalsleep.csv"><code>mammalsleep.csv</code></a> data to fit a linear regression model with short-wave sleep <code>sws</code> as the outcome. You can use all other variables as predictors or a subset of variables. Motivate your modeling choice.</p>
+<p>The <code>mammalsleep</code> data comes from Allison &amp; Cichetti (1976) and contains information on the following variables:</p>
+<ul>
+<li><code>species</code>: Species of animal</li>
+<li><code>bw</code>: Body weight (kg)</li>
+<li><code>brw</code>: Brain weight (g)</li>
+<li><code>sws</code>: Slow wave (“nondreaming”) sleep (hrs/day)</li>
+<li><code>ps</code>: Paradoxical (“dreaming”) sleep (hrs/day)</li>
+<li><code>ts</code>: Total sleep (hrs/day) (sum of slow wave and paradoxical sleep)</li>
+<li><code>mls</code>: Maximum life span (years)</li>
+<li><code>gt</code>: Gestation time (days)</li>
+<li><code>pi</code>: Predation index (1-5), 1 = least likely to be preyed upon</li>
+<li><code>sei</code>: Sleep exposure index (1-5), 1 = least exposed (e.g. animal sleeps in a well-protected den), 5 = most exposed</li>
+<li><code>odi</code>: Overall danger index (1-5) based on the above two indices and other information, 1 = least danger (from other animals), 5 = most danger (from other animals)</li>
+</ul>
+<p>I will post a video discussion of my solution to this problem on the wednesday before the next meeting.</p>
+<hr />
+<p>End of <strong>Regression in JASP</strong></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

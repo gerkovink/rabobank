@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Introduction to JASP</title>
+
+<script src="JASP1_files/header-attrs-2.11/header-attrs.js"></script>
+<script src="JASP1_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="JASP1_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="JASP1_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="JASP1_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="JASP1_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="JASP1_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="JASP1_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="JASP1_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="JASP1_files/navigation-1.1/tabsets.js"></script>
+<link href="JASP1_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="JASP1_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Introduction to JASP</h1>
+
+</div>
+
+
+<style type="text/css">
+  
+body{ /* Normal  */
+  font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 18px;
+  color: DarkBlue;
+}
+h1 { /* Header 1 */
+  font-size: 18px;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+  font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+  font-size: 14px;
+}
+</style>
+<hr />
+<p>In this first <code>JASP</code> exercise, we will get to know the <code>JASP</code> environment. We will also focus on importing our own data in the <code>JASP</code> processor. If you have any questions about this exercise, <a href="mailto:G.Vink@uu.nl">please contact me</a>.</p>
+<p>Let’s get started.</p>
+<p>-Gerko Vink</p>
+<hr />
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>JASP is an open-source statistics processor developed in Amsterdam with contributions from a great number of statistical experts. It is aimed at giving a no-nonsense and valid approach to statistical analysis and integrates well into the workflows of social scientists and the open science community.</p>
+<p>I can highly recommend that you watch the following video to get a good overview of JASP</p>
+<center>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/HxqB7CUA-XI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+</center>
+<p>JASP is supported by a wonderful community. There are <a href="https://www.youtube.com/c/JASPStatistics/featured">tons of YouTube videos</a> and a well-designed <a href="https://jasp-stats.org">website</a> which efficiently channels the <a href="https://jasp-stats.org/support/">means of Support</a> that users can get from the developers and the community.</p>
+<hr />
+</div>
+<div id="frequentist-inference" class="section level1">
+<h1>Frequentist inference</h1>
+<p>Frequentist inference is the process of drawing conclusions from information wherein the emphasis lies on the frequency or proportion of findings in the data. The well-known and widely adopted methodological frameworks of hypothesis testing and confidence intervals are founded in this frequentist type of inference. Almost all statistical software allows for frequentist inference.</p>
+<hr />
+</div>
+<div id="bayesian-inference" class="section level1">
+<h1>Bayesian inference</h1>
+<p>JASP also allows for Bayesian inference: this type of inference uses Bayes’ theorem to update the probability for a hypothesis as more evidence or information becomes available. Bayesian inference is often considered to have advantages over the standard framework of frequentist null-hypothesis significance testing. For example, it can be used to obtain evidence in favor of the null hypothesis and it can discriminate between the <em>absense of evidence</em> and <em>evidence of absence</em>. For now, we’ll focus on frequentist methods, but later on in the course we will come in contact with Bayesian methods.</p>
+<p>If you’d like to know more about Bayesian analysis in the context of JASP, <a href="https://link.springer.com/article/10.3758/s13423-020-01798-5">this manuscript</a> serves as a good starting point for adopting a Bayesian analysis workflow.</p>
+<hr />
+</div>
+<div id="jasp-on-your-machine" class="section level1">
+<h1>JASP on your machine</h1>
+<p>JASP can be <a href="https://jasp-stats.org/download/">downloaded</a> for Windows, Mac and Linux/Chromebook. The software is free and open source.</p>
+<hr />
+<div id="installing-jasp" class="section level2">
+<h2>Installing JASP</h2>
+<p>Installing JASP on any platform is straightforward:</p>
+<ol style="list-style-type: decimal">
+<li>Download <a href="https://jasp-stats.org/download/">the corresponding platform installer</a></li>
+<li>Install the software</li>
+</ol>
+<p>For Windows systems where the software installer fails, a <a href="https://jasp-stats.org/thank-you-for-downloading-jasp-win64-zip/">pre-installed version is available</a></p>
+<hr />
+</div>
+<div id="jasp-online" class="section level2">
+<h2>JASP online</h2>
+<p>An <a href="https://www.rollapp.com/app/jasp">online implementation of JASP</a> has been deployed by app-platform <a href="https://www.rollapp.com">rollApp</a>. This implementation is not affiliated with JASP and requires a monthly premium scubscription, because running JASP in the browser requires resources that do not fall in the free <a href="https://www.rollapp.com">rollApp</a> tier.</p>
+<hr />
+</div>
+</div>
+<div id="the-user-interface" class="section level1">
+<h1>The user interface</h1>
+<p>When you open JASP, the following window appears:</p>
+<center>
+<img src="JASP1_img/1.%20userinterface.png" style="width:100.0%" />
+</center>
+<p>In this window, no data is present and a <em>Welcome to JASP</em> background is shown.</p>
+The top menu bar allows for all navigation and the selection of statistical methods and procedures. <br><br>
+<center>
+<img src="JASP1_img/2.%20topmenu.png" style="width:100.0%" />
+</center>
+<br><br> When you click the hamburger symbol you can open a data set. <br><br>
+<center>
+<img src="JASP1_img/3.%20hamburger.gif" style="width:90.0%" />
+</center>
+<hr />
+</div>
+<div id="navigating-the-interface-panes" class="section level1">
+<h1>Navigating the interface panes</h1>
+<strong>1</strong> <strong>Open the data set <code>Album Sales</code> in the <code>Regression</code> folder in the JASP <code>Data Library</code>.</strong> <br><br>
+<center>
+<img src="JASP1_img/5.%20openalbumsalesdata.gif" style="width:90.0%" />
+</center>
+<p><br><br></p>
+<p>The <code>Album Sales</code> data set contains infromation on 4 variables:</p>
+<ul>
+<li><code>adverts</code>: Amount (in thousands of pounds) spent promoting the album before release.</li>
+<li><code>sales</code>: Sales (in thousands of copies) of each album in the week after release.</li>
+<li><code>airplay</code>: How many times songs from the album were played on a prominent national radio station in the week before release.</li>
+<li><code>attract</code>: How attractive people found the band’s image (1 to 10).</li>
+</ul>
+The interface shows two panes:
+<center>
+<img src="JASP1_img/6.%20interface.png" style="width:100.0%" />
+</center>
+<p>The left pane displays some default analyses that have been run on this data set. The right pane displays the output of these analyses. These analyses serve instructional purposes and have been chosen and annotated with explanatory text by the developers for this built-in data set. The analyses run are:</p>
+<ul>
+<li>Descriptive statistics for the columns <code>sales</code> and <code>advert</code> that show some quick univariate distributional statistics about the columns in the data, such as the number of cases, the number of missings, means, standard deviations and the minimum and maximum values.</li>
+<li>Linear regression analysis with the outcome <code>sales</code> modeled based on predictor <code>advert</code>.</li>
+<li>Pearson’s correlation coefficient to study (in this case the one-sided positive) association between all columns in the data.</li>
+<li>Another linear model where outcome <code>sales</code> is predicted by all other columns in the data.</li>
+</ul>
+<p><strong>2</strong> <strong>Study the data set values</strong></p>
+JASP offers a capable spreadsheet-like data pane for convenient data editing and viewing. You can open this pane by <em>clicking</em> the grey triangle in the left margin. <br><br>
+<center>
+<img src="JASP1_img/7.%20datapane.gif" style="width:90.0%" />
+</center>
+<p><br><br></p>
+<p>Double-clicking a cell would open the data editor. In the data editor, data records can be changed, added and deleted.</p>
+<hr />
+</div>
+<div id="changing-the-interface-language" class="section level1">
+<h1>Changing the interface language</h1>
+If you’d prefer another language than English, you can change the JASP user interface language under <code>Preferences &gt; Interfaces</code> <br><br>
+<center>
+<img src="JASP1_img/4.%20changelang.gif" style="width:90.0%" />
+</center>
+<hr />
+<p>End of <strong>Introduction to JASP</strong></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

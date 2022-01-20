@@ -1,0 +1,473 @@
+---
+title: "Introduction to R"
+output: 
+   html_document:
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    number_sections: false
+    self_contained: false
+---
+  
+<style type="text/css">
+  
+body{ /* Normal  */
+  font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 18px;
+  color: DarkBlue;
+}
+h1 { /* Header 1 */
+  font-size: 18px;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+  font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+  font-size: 14px;
+}
+</style>
+
+---
+
+```{r echo=FALSE}
+printAnswers <- TRUE
+printAnswers2 <- TRUE
+```
+
+We use the following packages in this Practical:
+```{r message=FALSE, warning = FALSE}
+library(MASS)     # for robust regression
+library(dplyr)    # data wrangling
+library(magrittr) # pipes
+library(ggplot2)  # plotting device
+library(DAAG)     # for the elastic1 and elastic2 data sets
+```
+
+In this practical you will need to perform regression analysis and create plots with ggplot2. I give you some examples and ask from you to apply the techniques I demonstrate. For some exercises I give you the solution (e.g. the resulting graph) and the interpretation. The exercise is then to provide to me the code that generates the solution and give me the interpretation for the exercises where this is omitted. 
+
+Feel free to ask me, if you have questions. 
+
+All the best, 
+
+Gerko
+
+---
+
+# Models and output
+
+---
+
+## Exercise 1
+
+---
+
+1. **Fit the following linear models on the `anscombe` data:**
+
+The `anscombe` data was discussed in the lecture and holds 4 pairs of variables that yield the same statistical properties (i.e. correlations and regression parameters) when analyzed. 
+
+- `y1` predicted by `x1` - stored in object `fit1`
+- `y2` predicted by `x2` - stored in object `fit2`
+- `y3` predicted by `x3` - stored in object `fit3`
+- `y4` predicted by `x4` - stored in object `fit4`
+
+```{r}
+fit1 <- anscombe %$%
+  lm(y1 ~ x1)
+fit2 <- anscombe %$%
+  lm(y2 ~ x2)
+fit3 <- anscombe %$%
+  lm(y3 ~ x3)
+fit4 <- anscombe %$%
+  lm(y4 ~ x4)
+```
+
+---
+
+## Exercise 2
+
+---
+
+2. **`Display a data frame with the coefficients of the 4 fitted objects from Exercise 1**
+
+Use the following code to markup your output into a nice format
+```{r}
+output <- data.frame(fit1 = coef(fit1),
+                     fit2 = coef(fit2),
+                     fit3 = coef(fit3),
+                     fit4 = coef(fit4))
+row.names(output) <- names(coef(fit1))
+```
+
+```{r echo = printAnswers, eval=printAnswers}
+output
+```
+
+---
+
+## Exercise 3
+
+---
+
+3. **Inspect the estimates for the four models in the `output` object. What do you conclude?**
+
+```{r echo = printAnswers}
+# These estimates are very similar. 
+```
+
+---
+
+# Assumptions
+
+There are four key assumptions about the use of linear regression models. In short, we assume the following:
+
+  _1_ The outcome to have a **linear relation** with the predictors and the predictor relations to be **additive**. 
+    - the expected value for the outcome is a straight-line function of each predictor, given that the others are fixed. 
+    - the slope of each line does not depend on the values of the other predictors
+    - the effects of the predictors on the expected value are additive
+  
+  $$ y = \alpha + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon$$
+  _2_ The residuals are statistically **independent**. If this assumption does not hold, then it would mean that the fit for one case would depend on the fit for another case. That is not allowed. 
+
+  _3_ The residual **variance is constant**
+    - accross the expected values
+    - across any of the predictors
+  
+  _4_ The residuals are **normally distributed** with mean $\mu_\epsilon = 0$
+
+---
+
+## Inspect `fit1`
+
+---
+
+### Exercise 4
+
+---
+
+4. **Inspect the assumptions for the first model. What do you think?**
+
+HINT: use `plot()` and use the plots you've created in exercises 5-7.
+
+```{r}
+plot(fit1)
+```
+
+- The data follows a linear trend, although the loess curve shows some deviations from linearity. All in all, there are only 11 points, so this slight deviations is not something that would worry me. 
+- Taking into account that there are only a few observations, I would argue that the residuals seem normally distributed from the `Normal Q-Q` plot. 
+- The residual variance seems constant over the level of the fitted values (i.e. homoscedastic residual variance) as seen in `Residuals vs. Fitted` plot and the `Scale-Location` plot. Again, the dip in the `Scale-Location` plot can easily be explained by the small sample size and the deviation should be taken with a grain of salt. 
+- No special remarks with respect to leverage and cook's distance, although case #3 would need to be at least investigated. 
+
+#### Cook's Distance
+Cook's distance is a measure that indicates the influence for each case on the fitted model. It is a function of the residual and the leverage. Leverage would be the extend to which a case would influence the obtained predicted values. Examples of values that have large leverage would be cases without whom there would be a completely different regression estimate, or cases with whom the estimate remains exactly the same (that would be cases that are exactly on the regression line, but then far away from the center of the cloud of points. 
+
+Having a high residual and high leverage would result in a larger Cook's distance. Likewise, low residual or low leverage would make it *harder* to obtain a larger Cook's distance. Hence, the funnel shape in the plots for the boundaries .5 and 1 for Cook's distance. 
+
+---
+
+## Inspect `fit2`
+
+---
+
+### Exercise 5
+
+---
+
+5. **Inspect the assumptions for the model `fit2`. What do you think?**
+
+```{r echo=printAnswers2, eval = printAnswers2}
+#- The data does not follow a linear trend, the deviation would definitely worry me. 
+#- The residuals seem non-normally distributed, especially in the tails from the `Normal Q-Q` plot. 
+#- I could not still argue that the residual variance seems more-or-less constant over the level of the fitted values. The residual variance is heteroscedastic.  
+#- Case 8 has quite some leverage and a large residual. It's cook's distance is greater than `.5`. 
+
+plot(fit2)
+```
+
+---
+
+## Inspect `fit3`
+
+---
+
+### Exercise 6
+
+---
+
+6. **Inspect the assumptions for the model `fit3`. What do you think?**
+
+```{r echo=printAnswers2, eval = printAnswers2}
+#- The data follows a perfect linear trend, except for case #3 
+#- The residuals seem normally distributed, except for case #3
+#- I could not still argue that the residual variance seems more-or-less constant over the level of the fitted values. The residual variance is heteroscedastic. However, if case #3 were omitted, there are no residuals: every point falls perfectly on the regression line. 
+#- Case 3 has quite some leverage, but not as large as other cases. Case #3 has the largest residual. It's cook's distance is greater than `1`. 
+
+plot(fit3)
+```
+
+---
+
+## Inspect `fit4`
+
+---
+
+### Exercise 7
+
+---
+
+7. **Inspect the assumptions for the model `fit4`. What do you think?**
+
+```{r echo=printAnswers2, eval = printAnswers2}
+#- The data follows no trend. You'd be an idiot to perform linear regression on this set. 
+#- The residuals seem normally distributed
+#- I could not still argue that the residual variance seems more-or-less constant over the level of the fitted values. The residual variance does not exist for fitted values other than 7!
+#- Case 8 has a leverage of 1; hence it is omitted from most of the plots. The plot over the remaining points is redundant.  
+
+plot(fit4)
+```
+
+---
+
+# Estimation and prediction
+
+---
+
+## Exercise 8
+
+---
+
+The data sets `elastic1` and `elastic2` from the package `DAAG` were obtained
+using the same apparatus, including the same rubber band, as the data frame
+`elasticband`. 
+
+8. **Using a different symbol and/or a different color, plot the data
+from the two data frames `elastic1` and `elastic2` on the same graph. Do the two
+sets of results appear consistent?**
+
+```{r}
+elastic <- rbind(elastic1, elastic2) 
+elastic$source <- c(rep("Elastic1", nrow(elastic1)), 
+                    rep("Elastic2", nrow(elastic2)))
+
+elastic %>%
+  ggplot(aes(stretch, distance, colour = source)) +
+  geom_point() + 
+  geom_smooth(method = "lm")
+
+```
+
+The results seem very consistent: Data set `elastic2` has more observations over a larger range, but both sets result in roughly the same regression line. Data set `elastic1` seems to have an *odd-one-out* value.
+
+---
+
+## Exercise 9
+
+---
+
+9. **For each of the data sets `elastic1` and `elastic2`, determine the regression of distance on stretch (i.e. model the outcome `distance` on the predictor `stretch`). In each case determine:**
+
+- fitted values and standard errors of fitted values and
+- the $R^2$ statistic.
+
+Compare the two sets of results. What is the key difference between the two sets
+of data?
+
+First we run the two models:
+```{r}
+fit1 <- 
+  elastic1 %$%
+  lm(distance ~ stretch)
+
+fit2 <- 
+  elastic2 %$%
+  lm(distance ~ stretch)
+```
+
+and then we compare the fitted values
+```{r}
+fit1 %>% predict(se.fit = TRUE)
+fit2 %>% predict(se.fit = TRUE)
+```
+We see that `fit1` (based on `elastic1`) has a larger residual standard deviation (i.e. `$residual.scale`). The residuals are the deviations for the observations from the regression line, where the regression line would indicate the conditional expectation of the outcome based on the predictor(s)
+
+To get the $R^2$ we can run a summary on the fitted models:
+```{r}
+fit1 %>% summary()
+fit2 %>% summary()
+```
+The summary of the fitted model starts with the model call and continues with the residuals. If there is a sufficient number of cases, the distributional properties of the residuals are shown. That would allow us to see if the residuals are non-normally distributed. 
+
+The next part of these outputs is the `Coefficients` table. This table holds the regression parameters, the standard error (sd of the sampling distribution of the estimate), the corresponding t-value for the test whether the regression parameter is equal to zero, and the p-value. The p-value is the probability of finding a larger absolute effect. 
+
+These summary outputs also give us the proportion of explained variance in the outcome by the model ($R^2$ - which is the square of $R$) and the adjusted version of $R^2$. A higher $R^2$ may indicate a better fit, although the number of parameters used in the model could be a factor in the quality of fit. If you'd use an infinite number of columns you always have a perfect model, as all cases can be perfectly modeled by all information. This is also an inefficient approach; there should be a far more parsimonious model. That is, there should exist a model that uses fewer parameters, but explains approximately the same information. The adjusted $R^2$ therefore takes the number of parameters into account and penalizes overparametrized models. 
+
+Finally, the overall ANOVA is given which tests whether the variance explained by the model is larger than the variance explained by the residuals (i.e. not explained by the model). For a single predictor the ANOVA p-value would mimic the corresponding paramater p-value, because both test are then equivalent. 
+
+We can see the $R^2$ in the output or we can grab the $R^2$ directly from the object without a pipe
+```{r}
+summary(fit1)$r.squared
+summary(fit2)$r.squared
+```
+The model based on `elastic2` has smaller standard errors and a much larger $R^2$.
+This is due to the larger range of values in `elastic2`, and the absence of an outlier.
+
+---
+
+## Exercise 10
+
+---
+
+10. **Study the *residual vs leverage* plots for both models. Hint use `plot()` on the fitted object**
+
+```{r}
+fit1 %>% plot(which = 5) #the fifth plot is the residuals vs leverage plot
+fit2 %>% plot(which = 5)
+```
+
+For `elastic1`, case 2 has the largest influence on the estimation. However, it is not the case with the largest residual:
+```{r}
+fit1$residuals
+```
+
+As we can see, case 7 has the largest residual.
+
+---
+
+Because there is a single value that influences the estimation and is somewhat different from the other values, a robust form of regression may be advisable to obtain more stable estimates. When robust methods are used, we refrain from omitting a suspected outlier from our analysis. In general, with robust analysis, influential cases that are not conform the other cases receive less weight in the estimation procedure then under non-robust analysis.
+
+---
+
+# Robust estimation
+
+---
+
+## Exercise 11
+
+---
+
+11. **Use the robust regression function `rlm()` from the `MASS` package to fit lines to the data in `elastic1` and `elastic2`. Compare the results with those from use of `lm()`:**
+
+- residuals
+- regression coefficients, 
+- standard errors of coefficients, 
+- plots of residuals against fitted values.
+
+First, we run the same models again with `rlm()`
+```{r}
+fit1.rlm <- 
+  elastic1 %$%
+  rlm(distance ~ stretch)
+
+fit2.rlm <- 
+  elastic2 %$%
+  rlm(distance ~ stretch)
+```
+
+and then we look at the coefficients and the residuals
+```{r}
+data.frame(lm = coef(fit1), 
+           rlm = coef(fit1.rlm))
+
+data.frame(lm = coef(fit2), 
+           rlm = coef(fit2.rlm))
+```
+
+We see that the coefficients for `elastic1` are different for `lm()` and `rlm()`. The coefficients for `elastic2` are very similar. 
+
+To study the standard errors of the coefficients:
+```{r}
+data.frame(lm = summary(fit1)$coefficients[, "Std. Error"], 
+           rlm = summary(fit1.rlm)$coefficients[, "Std. Error"])
+
+data.frame(lm = summary(fit2)$coefficients[, "Std. Error"], 
+           rlm = summary(fit2.rlm)$coefficients[, "Std. Error"])
+```
+
+The standard errors for the estimates for `elastic1` have become much smaller with `rlm()` compared to standard `lm()` estimation. The standard errors for `elastic2` are very similar. 
+
+To study the residuals:
+```{r}
+data.frame(lm = residuals(fit1), 
+           rlm = residuals(fit1.rlm))
+
+data.frame(lm = residuals(fit2), 
+           rlm = residuals(fit2.rlm))
+```
+
+The residual trend for both models is very similar. Remember that large residuals will still be large under robust analyses; they are only given less influence in the overall estimation of the modeling parameters. 
+
+---
+
+To plot the residuals against the fitted values:
+```{r}
+plot(fit1, which = 1, add.smooth = "FALSE", col = "blue", main = "elastic1")
+points(residuals(fit1.rlm) ~ fitted(fit1.rlm), col = "orange")
+
+plot(fit2, which = 1, add.smooth = "FALSE", col = "blue", main = "elastic2")
+points(residuals(fit2.rlm) ~ fitted(fit2.rlm), col = "orange")
+```
+
+The case 2 residual in elastic1 is smaller in the robust regression. This is
+because the case had less weight in the `rlm()` estimation of the coefficients than
+in the ordinary `lm()` regression.
+
+
+---
+
+## Exercise 12
+
+---
+
+12. **Use the `elastic2` variable `stretch` to obtain predictions on the robust model fitted on `elastic1`.**
+
+```{r}
+pred <- predict.lm(fit1.rlm, newdata = data.frame(stretch = elastic2$stretch))
+```
+
+---
+
+## Exercise 13
+
+---
+
+13. **Now make a scatterplot to investigate similarity between plot the predicted values against the observed values for `elastic2`**
+```{r}
+new.dat <- data.frame(stretch = elastic2$stretch, 
+                      distance = c(elastic2$distance, pred))
+
+new.dat$source <- c(rep("original", nrow(elastic2)), 
+                    rep("predicted", nrow(elastic2)))
+
+new.dat %>%
+  ggplot(aes(stretch, distance, colour = source)) +
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+The predicted values are very similar to the observed values:
+```{r}
+data.frame(distance = elastic2$distance, predicted = pred) %>%
+  ggplot(aes(distance, predicted)) + 
+  geom_point()
+  
+```
+
+They do not strictly follow the straight line because there is some modeling error: we use `elastic1`'s model to predict `elastic2`'s distance [error source 1] and we compare those predictions to `elastic2`'s observed distance [error source 2]. However, if you consider the modeling, these predictions are very accurate and have high correlations with the observed values:
+```{r}
+data.frame(distance = elastic2$distance, predicted = pred) %>%
+  cor() 
+```
+
+---
+
+End of **Exercise in R**

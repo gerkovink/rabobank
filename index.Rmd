@@ -48,9 +48,15 @@ We will adapt the course as we go. Therefore we suggest to access the materials 
 ## Column 1
 
 ### Description
-This page holds the course materials and meeting links for the meetings on statistics between Utrecht University and the Rabobank. 
+Welcome to this course page.
 
-Please use the tabs above to navigate this page.
+This page is designed as a dashboard that holds the course materials and meeting links for the meetings on statistics between Utrecht University and the Rabobank. 
+
+Please use the tabs above to navigate this page. If there is anything that remains unclear, or if there is a question that you would like to ask me, feel free to [contact me](mailto:G.Vink@uu.nl).
+
+All the best, 
+
+[Gerko Vink](https://www.gerkovink.com)
 
 # Meet the team
 
@@ -151,20 +157,23 @@ Please find the lecture slides and relevant materials below:
 ### Exercises in JASP
 [JASP](https://jasp-stats.org) is an open-source statistics processor aimed at provinding an easy to use intuitive interface for standard analysis procedures. If you have little experience with statistics and programming, we recommend following the exercises in JASP. 
 
-- [JASP exercises for meeting 1]()
+- [Introduction to JASP](practicals/day1/JASP/JASP1.html)
+- [Regression in JASP](practicals/day1/JASP/JASP2.html)
+- [The mammalsleep data for the challenge](practicals/day1/mammalsleep.csv)
 
 If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl)
 
 ### Exercises in `R`
 [`R`](https://www.r-project.org) is a free software environment that serves as the de facto standard for statistical computing and graphics. If you have experience with statistics and programming, we recommend following the exercises in `R`. 
 
-- [R exercises for meeting 1]()
+- [Introduction to `R`](practicals/day1/R/R1.html)
+- [Regression in `R`](practicals/day1/R/R2.html)
 
 If you have questions about the exercises, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
 
 **Other useful links for the `R` exercises: **
 
-- For those that are not yet familiar with `R`, Gerko Vink has developed [this course including video walkthroughs](https://www.gerkovink.com/prepR/#exercises) aimed at getting participants jump-started with scripting in `R`. 
+- For those that are not yet familiar with `R`, Gerko Vink has developed [this course including video walkthroughs](https://www.gerkovink.com/prepR/#exercises) aimed at getting participants jump-started with scripting in `R`. This course is also referred to in the [Introduction to `R`](practicals/day1/R/R1.html). 
 - [The tidyverse style guide](https://style.tidyverse.org)
 
 
