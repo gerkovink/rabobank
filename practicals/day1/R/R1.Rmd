@@ -49,7 +49,7 @@ Let's get started.
 ---
 
 # No experience with `R`
-If you have no experience with `R`, I can highly suggest that you follow [this quick course](https://www.gerkovink.com/prepR). In this course I have prepared three exercises that take you up to speed in scripting with `R` very quickly. These exercises are discussed in video-walkthroughs that you can also find on this course page. 
+If you have no experience with `R`, I can highly suggest that you follow [this quick course](https://www.gerkovink.com/prepR). In this course I have prepared three exercises that take you up to speed in scripting with `R` very quickly. These exercises are discussed in video-walkthroughs that you can also find on this course page. The course also details [how to install `R` and `RStudio`](https://www.gerkovink.com/prepR/). 
 
 ---
 

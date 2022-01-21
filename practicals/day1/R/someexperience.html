@@ -347,6 +347,7 @@ library(ggplot2)  # Plotting device</code></pre>
 <pre class="r"><code>anscombe %$%
   cor(x4, y4)</code></pre>
 <pre><code>## [1] 0.8165214</code></pre>
+<p>The exposition pipe <code>%$%</code> <em>exposes</em> the listed dimensions (for a data frame these are the columns names) of the dataset. In the next step of the pipe we can then call on these named dimensions directly.</p>
 <hr />
 </div>
 <div id="exercise-4" class="section level2">
@@ -370,6 +371,7 @@ library(ggplot2)  # Plotting device</code></pre>
 <pre><code>##           wgt       hgt
 ## wgt 1.0000000 0.9428906
 ## hgt 0.9428906 1.0000000</code></pre>
+<p>because we select only a pair of variables. In that case the listwise deletion from <code>na.omit()</code> would be equivalent to the pairwise deletion used by<code>cor()</code>.</p>
 <p>Alternatively, we can use the <code>%$%</code> pipe:</p>
 <pre class="r"><code>boys %$% 
   cor(hgt, wgt, use = &quot;pairwise.complete.obs&quot;)</code></pre>
@@ -472,7 +474,7 @@ library(ggplot2)  # Plotting device</code></pre>
   plot(col = &quot;red&quot;, main = &quot;Height in centimeters&quot;) %&gt;%
   transform(hgt = hgt / 100) %&gt;%
   plot(col = &quot;blue&quot;, main = &quot;Height in meters&quot;)</code></pre>
-<p><img src="img/flow_t_pipe.png" /></p>
+<p><img src="flow_t_pipe.png" /></p>
 <p>We can see that there is indeed a literal T-junction. Naturally, we can expand this process with more <code>%T&gt;%</code> pipes. However, once a pipe gets too long or too complicated, it is perhaps more useful to cut the piped problem into smaller, manageable pieces.</p>
 <hr />
 </div>

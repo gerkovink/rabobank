@@ -111,6 +111,7 @@ Alternatively, we can use the `%$%` pipe from package `magrittr` to make this pr
 anscombe %$%
   cor(x4, y4)
 ```
+The exposition pipe `%$%` *exposes* the listed dimensions (for a data frame these are the columns names) of the dataset. In the next step of the pipe we can then call on these named dimensions directly. 
 
 ---
 
@@ -133,6 +134,7 @@ boys %>%
   na.omit() %>%
   cor()
 ```
+because we select only a pair of variables. In that case the listwise deletion from `na.omit()` would be equivalent to the pairwise deletion used by`cor()`.
 
 Alternatively, we can use the `%$%` pipe:
 ```{r}
@@ -270,7 +272,7 @@ boys %>%
   transform(hgt = hgt / 100) %>%
   plot(col = "blue", main = "Height in meters")
 ```
-![](img/flow_t_pipe.png)
+![](flow_t_pipe.png)
 
 We can see that there is indeed a literal T-junction. Naturally, we can expand this process with more `%T>%` pipes. However, once a pipe gets too long or too complicated, it is perhaps more useful to cut the piped problem into smaller, manageable pieces. 
 
