@@ -470,4 +470,25 @@ data.frame(distance = elastic2$distance, predicted = pred) %>%
 
 ---
 
+# Challenge
+Use the `mice::mammalsleep` (i.e. dataset `mammalsleep` from package `mice`) data to fit a linear regression model with slow-wave sleep `sws` as the outcome. You can use all other variables as predictors or a subset of variables. Motivate your modeling choice. 
+
+The `mammalsleep` data comes from Allison & Cichetti (1976) and contains information on the following variables:
+
+- `species`: Species of animal
+- `bw`: Body weight (kg)
+- `brw`: Brain weight (g)
+- `sws`: Slow wave ("nondreaming") sleep (hrs/day)
+- `ps`: Paradoxical ("dreaming") sleep (hrs/day)
+- `ts`: Total sleep (hrs/day) (sum of slow wave and paradoxical sleep)
+- `mls`: Maximum life span (years)
+- `gt`: Gestation time (days)
+- `pi`: Predation index (1-5), 1 = least likely to be preyed upon
+- `sei`: Sleep exposure index (1-5), 1 = least exposed (e.g. animal sleeps in a well-protected den), 5 = most exposed
+- `odi`: Overall danger index (1-5) based on the above two indices and other information, 1 = least danger (from other animals), 5 = most danger (from other animals)
+
+I will post a video discussion of my solution to this problem on the Wednesday before the next meeting. 
+
+---
+
 End of **Exercise in R**

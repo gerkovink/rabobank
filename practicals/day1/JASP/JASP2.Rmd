@@ -217,7 +217,7 @@ In our case, there are no high Cook's distance. As a rule of thumb, a Cook's dis
 
 # Challenge
 
-Use the [`mammalsleep.csv`](../mammalsleep.csv) data to fit a linear regression model with  short-wave sleep `sws` as the outcome. You can use all other variables as predictors or a subset of variables. Motivate your modeling choice. 
+Use the [`mammalsleep.csv`](../mammalsleep.csv) data to fit a linear regression model with  slow-wave sleep `sws` as the outcome. You can use all other variables as predictors or a subset of variables. Motivate your modeling choice. 
 
 The `mammalsleep` data comes from Allison & Cichetti (1976) and contains information on the following variables:
 
@@ -233,7 +233,7 @@ The `mammalsleep` data comes from Allison & Cichetti (1976) and contains informa
 - `sei`: Sleep exposure index (1-5), 1 = least exposed (e.g. animal sleeps in a well-protected den), 5 = most exposed
 - `odi`: Overall danger index (1-5) based on the above two indices and other information, 1 = least danger (from other animals), 5 = most danger (from other animals)
 
-I will post a video discussion of my solution to this problem on the wednesday before the next meeting. 
+I will post a video discussion of my solution to this problem on the Wednesday before the next meeting. 
 
 ---
 
