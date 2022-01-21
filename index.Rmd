@@ -176,4 +176,9 @@ If you have questions about the exercises, please contact [Gerko Vink](mailto::G
 - For those that are not yet familiar with `R`, Gerko Vink has developed [this course including video walkthroughs](https://www.gerkovink.com/prepR/#exercises) aimed at getting participants jump-started with scripting in `R`. This course is also referred to in the [Introduction to `R`](practicals/day1/R/R1.html). 
 - [The tidyverse style guide](https://style.tidyverse.org)
 
+# Meeting 2
 
+## Column 1
+
+### Suggestion for topics
+Please use [this form](https://docs.google.com/forms/d/e/1FAIpQLSehdlzDzEvZfJE5f3PdVLcsuqirx04AcbDIVX1X2b-4abnO7g/viewform?usp=sf_link) before Wednesday January 26. We aim to incorporate your requests in the planned curriculum. 
