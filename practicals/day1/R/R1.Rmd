@@ -54,7 +54,7 @@ If you have no experience with `R`, I can highly suggest that you follow [this q
 ---
 
 # Some experience with `R`
-If you have some experience with R, I suggest that you make [these exercises](someexperience.html). They more-or-less cover all necessary skills to follow any coding examples I will give you in this course. 
+If you have some experience with R, I suggest that you make [these exercises](someexperience.html). They more-or-less cover all necessary skills to follow any coding examples I will give you in this course, and then some.
 
 ---
 
