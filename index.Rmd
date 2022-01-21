@@ -159,7 +159,7 @@ Please find the lecture slides and relevant materials below:
 
 - [Introduction to JASP](practicals/day1/JASP/JASP1.html)
 - [Regression in JASP](practicals/day1/JASP/JASP2.html)
-- [The mammalsleep data for the challenge](practicals/day1/mammalsleep.csv)
+- [The mammalsleep data for the challenge](practicals/day1/mammalsleep.csv) (right-click to save)
 
 If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl)
 
