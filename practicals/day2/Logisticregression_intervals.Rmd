@@ -208,9 +208,12 @@ pred.data <- data.frame(rows = c(rows.matrix),
 # calculate centroids and quantiles
 pred <- pred.data %>% group_by(rows) %>% 
   summarize(est = mean(pred), 
+            se2 = sd(pred),
             se.fit = mean(se),
             lwr = est - 1.96 * se.fit, #parametric SE
             upr = est + 1.96 * se.fit, #parametric SE
+            lwr2 = est - 1.96 * se2, #parametric SE
+            upr2 = est + 1.96 * se2, #parametric SE
             lwr.q = quantile(pred, .025), 
             upr.q = quantile(pred, .975))
 
@@ -234,6 +237,23 @@ plot(x = fit %>% predict,
      xlab = "fitted predictions",
      ylab = "bootstrapped predictions")
 ```
+
+## Compare se's
+```{r}
+y_se <- fit %>% 
+  predict(se = TRUE) %>% 
+  as.data.frame()
+plot(x = y_se$se.fit, 
+     y = pred$se.fit, 
+     xlab = "fitted standard errors",
+     ylab = "bootstrapped fitted standard errors")
+plot(x = y_se$se.fit, 
+     y = pred$se2, 
+     xlab = "fitted standard errors",
+     ylab = "bootstrapped sampled standard errors")
+```
+
+The standard error based on the bootstrapped sample (`se2` - taking the sd over the available measurements) does not seem right. I will ignore that one for the remainder of the document. 
 
 ---
 
