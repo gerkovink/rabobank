@@ -74,7 +74,7 @@ titanic %<>%
 
 # Draw 10000 bootstrapped sets
 ```{r}
-boot <- replicate(n = 1000, 
+boot <- replicate(n = 10000, 
                   expr = titanic[sample(nrow(titanic), 
                                         replace = TRUE), ], 
                   simplify = FALSE)
