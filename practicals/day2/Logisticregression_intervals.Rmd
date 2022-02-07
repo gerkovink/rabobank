@@ -49,6 +49,8 @@ library(ggplot2)
 library(GGally)
 library(ciTools)
 library(caret)
+library(marginaleffects)
+library(insight)
 set.seed(123)
 ```
 
@@ -324,4 +326,65 @@ confusionMatrix(predicted, titanic$Survived)
 ```{r}
 confusionMatrix(yhat, predicted) # bootstrap is reference
 ```
+
+
+# Checks
+
+## Check the individual`se.fit`
+Let's identify if we can replicate the `se.fit` calculation. First, lets manually calculate the `se.fit` that is produced by `predict()`. 
+```{r}
+# For the whole data
+pred <- predict(fit, se = TRUE)
+X <- model.matrix(fit) # Design matrix
+sefun <- function(x) sqrt(t(x) %*% vcov(fit) %*% x)
+SE.manual <- apply(X, 1, sefun)
+all.equal(pred$se.fit,SE.manual) # SAME
+```
+That works. 
+
+## Is this the same as Agresti?
+Let's find out:
+```{r}
+#Let's take a simple model, because I don't understand Agresti's notation 
+fit1 <- titanic %$% 
+  glm(Survived ~ Age, family = binomial(link = "logit"))
+vcov(fit1)
+
+# using predict()
+predict(fit1, newdata = data.frame(Age = 22), se.fit = TRUE)
+
+# cf. Agresti pp 170-171
+sqrt(0.0254382353 + 22^2 * 2.447639e-05 + 2*22 * -0.0007111544)
+
+## THOSE ARE IDENTICAL!
+```
+YES, both estimates are identical. Agresti yields the same estimated standard error of individual fit as `predict()`.
+
+
+Some additional checks across packages.
+```{r}
+# From package marginaleffects
+predictions(fit) %>% head() #interval not okay
+predict(fit, se.fit = TRUE) %>%  
+  as.data.frame() %>% 
+  mutate(prob = plogis(fit), 
+         lwr = plogis(fit - qt(.975, Inf) * se.fit),
+         upr = plogis(fit + qt(.975, Inf) * se.fit)) %>% head()
+get_predicted_ci(fit, predictions = get_predicted(fit), ci_type = "prediction") %>% head()
+```
+
+
+## Are confidence intervals wider than prediction
+Of course they are. Some proof for a linear model:
+```{r}
+fit0 <- lm(hgt ~ age, data = mice::boys)
+
+# confidence interval
+predict(fit0, interval = "confidence") %>% head()
+
+# prediction interval
+predict(fit0, interval = "prediction") %>% head()
+
+```
+Note that the warning states that the predictions refer to future responses. Hence, the larger variance and wider intervals. 
 

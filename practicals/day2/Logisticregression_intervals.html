@@ -310,7 +310,9 @@ library(GGally)</code></pre>
 <pre><code>## The following object is masked from &#39;package:purrr&#39;:
 ## 
 ##     lift</code></pre>
-<pre class="r"><code>set.seed(123)</code></pre>
+<pre class="r"><code>library(marginaleffects)
+library(insight)
+set.seed(123)</code></pre>
 <hr />
 </div>
 <div id="grab-the-titanic-data" class="section level1">
@@ -700,6 +702,118 @@ confusionMatrix(predicted, titanic$Survived)</code></pre>
 ##                                      
 ##        &#39;Positive&#39; Class : No         
 ## </code></pre>
+</div>
+</div>
+<div id="checks" class="section level1">
+<h1>Checks</h1>
+<div id="check-the-individualse.fit" class="section level2">
+<h2>Check the individual<code>se.fit</code></h2>
+<p>Let’s identify if we can replicate the <code>se.fit</code> calculation. First, lets manually calculate the <code>se.fit</code> that is produced by <code>predict()</code>.</p>
+<pre class="r"><code># For the whole data
+pred &lt;- predict(fit, se = TRUE)
+X &lt;- model.matrix(fit) # Design matrix
+sefun &lt;- function(x) sqrt(t(x) %*% vcov(fit) %*% x)
+SE.manual &lt;- apply(X, 1, sefun)
+all.equal(pred$se.fit,SE.manual) # SAME</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>That works.</p>
+</div>
+<div id="is-this-the-same-as-agresti" class="section level2">
+<h2>Is this the same as Agresti?</h2>
+<p>Let’s find out:</p>
+<pre class="r"><code>#Let&#39;s take a simple model, because I don&#39;t understand Agresti&#39;s notation 
+fit1 &lt;- titanic %$% 
+  glm(Survived ~ Age, family = binomial(link = &quot;logit&quot;))
+vcov(fit1)</code></pre>
+<pre><code>##               (Intercept)           Age
+## (Intercept)  0.0254382353 -7.111544e-04
+## Age         -0.0007111544  2.447639e-05</code></pre>
+<pre class="r"><code># using predict()
+predict(fit1, newdata = data.frame(Age = 22), se.fit = TRUE)</code></pre>
+<pre><code>## $fit
+##          1 
+## -0.4022246 
+## 
+## $se.fit
+## [1] 0.07742101
+## 
+## $residual.scale
+## [1] 1</code></pre>
+<pre class="r"><code># cf. Agresti pp 170-171
+sqrt(0.0254382353 + 22^2 * 2.447639e-05 + 2*22 * -0.0007111544)</code></pre>
+<pre><code>## [1] 0.07742102</code></pre>
+<pre class="r"><code>## THOSE ARE IDENTICAL!</code></pre>
+<p>YES, both estimates are identical. Agresti yields the same estimated standard error of individual fit as <code>predict()</code>.</p>
+<p>Some additional checks across packages.</p>
+<pre class="r"><code># From package marginaleffects
+predictions(fit) %&gt;% head() #interval not okay</code></pre>
+<pre><code>##       type  predicted  std.error   conf.low  conf.high Survived    Pclass
+## 1 response 0.10309564 0.01425862 0.07831075 0.13457943       No 3rd class
+## 2 response 0.91153082 0.01396643 0.88006286 0.93534903      Yes 1st class
+## 3 response 0.57158684 0.03996856 0.49210640 0.64753779      Yes 3rd class
+## 4 response 0.91947951 0.01305649 0.88989358 0.94163700      Yes 1st class
+## 5 response 0.06856994 0.01115081 0.04968646 0.09392085       No 3rd class
+## 6 response 0.08829226 0.01254977 0.06659353 0.11618123       No 3rd class
+##      Sex Age
+## 1   male  22
+## 2 female  38
+## 3 female  26
+## 4 female  35
+## 5   male  35
+## 6   male  27</code></pre>
+<pre class="r"><code>predict(fit, se.fit = TRUE) %&gt;%  
+  as.data.frame() %&gt;% 
+  mutate(prob = plogis(fit), 
+         lwr = plogis(fit - qt(.975, Inf) * se.fit),
+         upr = plogis(fit + qt(.975, Inf) * se.fit)) %&gt;% head()</code></pre>
+<pre><code>##          fit    se.fit residual.scale       prob        lwr       upr
+## 1 -2.1632921 0.1611160              1 0.10309564 0.07733827 0.1361655
+## 2  2.3324712 0.2250222              1 0.91153082 0.86891916 0.9412273
+## 3  0.2883284 0.1549047              1 0.57158684 0.49618027 0.6438092
+## 4  2.4352961 0.2282301              1 0.91947951 0.87952856 0.9469805
+## 5 -2.6088669 0.1848632              1 0.06856994 0.04874441 0.0956482
+## 6 -2.3346670 0.1645227              1 0.08829226 0.06555118 0.1179271</code></pre>
+<pre class="r"><code>get_predicted_ci(fit, predictions = get_predicted(fit), ci_type = &quot;prediction&quot;) %&gt;% head()</code></pre>
+<pre><code>##   CI_low.Predicted  CI_low.SE CI_low.CI_low CI_low.CI_high CI_high.Predicted
+## 1             -Inf 0.01489791    0.07733827      0.1361655               Inf
+## 2             -Inf 0.01814632    0.86891916      0.9412273               Inf
+## 3             -Inf 0.03793233    0.49618027      0.6438092               Inf
+## 4             -Inf 0.01689746    0.87952856      0.9469805               Inf
+## 5             -Inf 0.01180686    0.04874441      0.0956482               Inf
+## 6             -Inf 0.01324354    0.06555118      0.1179271               Inf
+##   CI_high.SE CI_high.CI_low CI_high.CI_high
+## 1 0.01489791     0.07733827       0.1361655
+## 2 0.01814632     0.86891916       0.9412273
+## 3 0.03793233     0.49618027       0.6438092
+## 4 0.01689746     0.87952856       0.9469805
+## 5 0.01180686     0.04874441       0.0956482
+## 6 0.01324354     0.06555118       0.1179271</code></pre>
+</div>
+<div id="are-confidence-intervals-wider-than-prediction" class="section level2">
+<h2>Are confidence intervals wider than prediction</h2>
+<p>Of course they are. Some proof for a linear model:</p>
+<pre class="r"><code>fit0 &lt;- lm(hgt ~ age, data = mice::boys)
+
+# confidence interval
+predict(fit0, interval = &quot;confidence&quot;) %&gt;% head()</code></pre>
+<pre><code>##         fit      lwr      upr
+## 3  70.93310 69.67496 72.19124
+## 4  70.95288 69.69500 72.21076
+## 18 71.07815 69.82194 72.33437
+## 23 71.09793 69.84198 72.35389
+## 28 71.11112 69.85534 72.36690
+## 36 71.15068 69.89543 72.40593</code></pre>
+<pre class="r"><code># prediction interval
+predict(fit0, interval = &quot;prediction&quot;) %&gt;% head()</code></pre>
+<pre><code>## Warning in predict.lm(fit0, interval = &quot;prediction&quot;): predictions on current data refer to _future_ responses</code></pre>
+<pre><code>##         fit      lwr      upr
+## 3  70.93310 50.69346 91.17274
+## 4  70.95288 50.71326 91.19250
+## 18 71.07815 50.83863 91.31767
+## 23 71.09793 50.85843 91.33744
+## 28 71.11112 50.87163 91.35061
+## 36 71.15068 50.91122 91.39014</code></pre>
+<p>Note that the warning states that the predictions refer to future responses. Hence, the larger variance and wider intervals.</p>
 </div>
 </div>
 
