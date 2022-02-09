@@ -1,0 +1,165 @@
+---
+title: "My solution to the challenge"
+author: "Gerko Vink"
+output: 
+   html_document:
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    number_sections: false
+---
+  
+<style type="text/css">
+  
+body{ /* Normal  */
+  font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 18px;
+  color: DarkBlue;
+}
+h1 { /* Header 1 */
+  font-size: 18px;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+  font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+  font-size: 14px;
+}
+</style>
+  
+---
+
+The following packages are required for this practical:
+```{r, message=FALSE}
+library(dplyr)
+library(magrittr)
+library(mice)
+library(ggplot2)
+```
+
+--- 
+
+The basis of the data relations is captured in the variance/covariance matrix and how it translates to data relations. This is most easily linearly summarized in the correlation matrix:
+```{r}
+mammalsleep %>%
+  subset(select = -species) %>% #exclude factor species
+  cor(use = "pairwise.complete.obs") #pairwise deletion
+```
+
+This matrix contains quite a few cells. To obtain only the correlations with `sws` we could select the respective column:
+```{r}
+mammalsleep %>%
+  subset(select = -species) %>% #exclude factor species
+  cor(use = "pairwise.complete.obs") %>% #pairwise deletion
+  subset(select = sws) #only column sws from the correlation matrix
+```
+
+It seems that the following variables have a rather nice relation with `sws`. As a matter of fact, all predictors do. However, we first focus on this subset:
+
+- `ps`: paradoxical sleep
+- `ts` : total sleep
+- `gt` : gestation time
+- `sei`: sleep exposure index
+- `odi`: overall danger index
+
+However, from the larger correlation matrix we can also see that `ts` is highly related to with `ps` - in fact, `ts` is calculated as the sum over `sws` and `ps`. Including both variables will not hurt our $R^2$ per se, but it will certainly trouble the precision of our estimation as including both variables will yield much larger standard errors. I will demonstrate this. For now I choose `ts` as a predictor: `ps` linear association with `sws` is slightly weaker. Moreover, `ps` misses 12 cases, while `ts` only misses 4 cases. 
+```{r}
+mammalsleep %>%
+  summary()
+```
+
+Because of the missingness argument it could be highly preferable to use `ts` in the model.
+
+We run the new model:
+```{r}
+fit <- 
+  mammalsleep %$%
+  lm(sws ~ ts + gt + sei + odi)
+  
+fit %>%
+  summary()
+```
+and we have obtained a very high $R^2$, even though only one predictor is significant. If prediction was our goal, we are doing great: the $R^2$ indicates that our predicted outcome correlates $\rho = .969$ with the observed outcome.  
+
+---
+
+## Some further diagnostic checking of this model
+
+---
+
+```{r}
+fit %>%
+  plot(which = 1:6)
+```
+
+Some issues spring to mind:
+
+- There error variance seems to be heteroscedastic [but we have a rather small sample]
+- The residuals are not normally distributed in the extreme tails
+- The following case has a large leverage: 5
+- The following case has large residual: 61
+- Case 33 still has a large Cook's distance (no alarming residual or leverage)
+```{r}
+mammalsleep$species[c(5, 33, 61)]
+```
+
+If we sort the data based on `sws`:
+```{r}
+mammalsleep %>% 
+  arrange(desc(sws)) #sort the data in descending order based on sws
+```
+
+we see that high `sws` is primarily for lighter mammals without real predatory enemies. 
+```{r}
+fit %>%
+  residuals() 
+```
+
+---
+
+## Model with all predictors
+
+---
+
+If we run a model with all predictors, we end up with
+```{r}
+fit <- 
+  mammalsleep %$%
+  lm(sws ~ bw + brw + ps + ts + mls + gt + pi + sei + odi) 
+  
+fit %>%
+  summary()
+```
+
+This system is linearly dependent; we have the correct answer in the system `sws = ts - ps`. This may not be informative, even though our $R^2$ indicates perfection. In contrast, when we remove `ts`, the $R^2$ naturally drops dramatically. If we remove both `ts` and `ps` a completely different system emerges, but the $R^2$ drops dramatically:
+```{r}
+fit <- 
+  mammalsleep %$%
+  lm(sws ~ bw + brw + mls + gt + pi + sei + odi) 
+  
+fit %>%
+  summary()
+```
+
+---
+
+## Conclusion
+
+These data are very inter-related. So much so, that it is hard to group all these mammals together in a single linear model. There will always be large residuals: most animals that are really have need quite a lot of food and have no time to eat. Yet, this data set contains only a few of those animals. Other animals are not quite heavy, but still sleep a lot. Take e.g. ourselves (measured in this data set as `man`): We are light, have massive brains and sleep quite a lot - yet we are nowhere near the region in the foodchain any model would expect us to be. 
+
+Bottomline: not all data sets lend themselves for inference based on linear models - at least not without some serious data cleaning and/or feature transformation. That said, it is not hard to find a good fitting and well-performing predictive model in this data set. 
+
+---
+
+End of `Challenge`. 
