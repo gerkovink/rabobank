@@ -183,5 +183,51 @@ If you have questions about the exercises, please contact [Gerko Vink](mailto::G
 
 ## Column 1
 
+### This meeting
+In this meeting, [Prof. dr. Peter van der Heijden](https://www.uu.nl/medewerkers/pgmvanderheijden)
+will teach us about *Prediction and uncertainty*. <br>
+
+During and after the lecture there will be plenty of room for questions and discussion. To aid the understanding of this meeting's theory we have prepared a series of exercises for you. You can find all meeting materials in the column to the right. 
+
+[**THIS IS THE MEETING LINK FOR THE SECOND MEETING**](https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZGIyYjQ2ZDgtZTkyYS00ZGMwLTg5YzktODQ5OWU5N2MxNDE3%40thread.v2/0?context=%7b%22Tid%22%3a%22d72758a0-a446-4e0f-a0aa-4bf95a4a10e7%22%2c%22Oid%22%3a%22cc7d7fcd-73aa-4668-936a-2ca38cace0f3%22%7d)
+
+### Meeting schedule
+| When?  |      | What?      |
+|:--------|:-------|:-------------|
+| 09.30 | 09.45  | Introduction |
+| 09.45 | 11.15  | Lecture |
+| 11.15 | 11.30  | Discussion |
+| 11.30 | 12.00  | Set up for next meeting |
+
+We will reserve plenty of room for breaks. 
+
+### Other useful links
+Please find here any useful links relating to this meeting's materials
+
+## Column 2
+
+### Lecture slides
+Please find the lecture slides and relevant materials below:
+
+- [Slides for this meeting](files/rabobank_day2_slides.pdf)
+
+### Exercises in JASP
+[JASP](https://jasp-stats.org) is an open-source statistics processor aimed at provinding an easy to use intuitive interface for standard analysis procedures. If you have little experience with statistics and programming, we recommend following the exercises in JASP. 
+
+If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl)
+
+### Exercises in `R`
+[`R`](https://www.r-project.org) is a free software environment that serves as the de facto standard for statistical computing and graphics. If you have experience with statistics and programming, we recommend following the exercises in `R`. 
+
+If you have questions about the exercises, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
+
+**Other useful links for the `R` exercises: **
+
+
+
+# Meeting 3
+
+## Column 1
+
 ### Suggestion for topics
-Please use [this form](https://docs.google.com/forms/d/e/1FAIpQLSehdlzDzEvZfJE5f3PdVLcsuqirx04AcbDIVX1X2b-4abnO7g/viewform?usp=sf_link) before Wednesday January 26. We aim to incorporate your requests in the planned curriculum. 
+Please use [this form](https://docs.google.com/forms/d/e/1FAIpQLSehdlzDzEvZfJE5f3PdVLcsuqirx04AcbDIVX1X2b-4abnO7g/viewform?usp=sf_link) before Wednesday February 14. We aim to incorporate your requests in the planned curriculum. 
