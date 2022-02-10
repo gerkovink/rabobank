@@ -160,6 +160,7 @@ Please find the lecture slides and relevant materials below:
 - [Introduction to JASP](practicals/day1/JASP/JASP1.html)
 - [Regression in JASP](practicals/day1/JASP/JASP2.html)
 - [The mammalsleep data for the challenge](practicals/day1/mammalsleep.csv) (right-click to save)
+- [Video discussion of the challenge](https://www.dropbox.com/s/rr2aiz12tjswj4c/Challenge_JASP.mp4?dl=0)
 
 If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl)
 
@@ -168,7 +169,8 @@ If you have questions about the exercises, please contact [Gerko Vink](mailto:G.
 
 - [Introduction to `R`](practicals/day1/R/R1.html)
 - [Regression in `R`](practicals/day1/R/R2.html)
-- [My discussion of the challenge](practicals/day1/R/Challenge.html) - [video]()
+- [My output of the challenge](practicals/day1/R/Challenge.html) 
+- [Video discussion of the challenge](https://www.dropbox.com/s/m9hb4xmdac4ufvz/Challenge_R.mp4?dl=0)
 
 If you have questions about the exercises, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
 
