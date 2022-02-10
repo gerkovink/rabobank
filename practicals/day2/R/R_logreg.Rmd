@@ -239,7 +239,7 @@ The `titanic` data set contains information on the fate of passengers on the fat
 
 The data set [can be obtained here](Titanic.csv) or downloaded from the code block below.
 ```{r}
-con <- url("https://www.gerkovink.com/rabobank/practicals/Day%202/R/Titanic.csv")
+con <- url("https://www.gerkovink.com/rabobank/practicals/day2/R/Titanic.csv")
 titanic <- read_csv(con)
 ```
 
@@ -248,8 +248,6 @@ titanic <- read_csv(con)
 
 _5_ **Load and inspect [the dataset](Titanic.csv) and fit a logistic regression model aimed at predicting survival from all other recorded features and all possible interactions between predictors**. 
 ```{r}
-con <- url("https://www.gerkovink.com/erasmus/Day%202/Part%20D/titanic.csv")
-titanic <- read_csv(con) %>% select()
 titanic %<>% mutate(Pclass = factor(Pclass), 
                  Sex = factor(Sex))
 ```
@@ -295,13 +293,24 @@ head(pred)
 
 _8_ **Use `ggplot()` to display the plot of predicted survival probabilities vs all other features separately for males and females.**
 
-```{r}
+```{r fig.width = 10, fig.height=6}
 pred %>% 
-  mutate(lower = plogis(fit - 1.96 * se.fit),
-         upper = plogis(fit + 1.96 * se.fit)) %>% 
+  mutate(lower = plogis(fit - 1.96 * se.fit),     # lower prediction bound
+         upper = plogis(fit + 1.96 * se.fit)) %>% # upper prediction bound
   ggplot(aes(y = prob, x = Age, fill = Pclass)) + 
-  geom_ribbon(aes(ymin = lower, ymax = upper, fill = Pclass), alpha = .2) +
-  geom_line(aes(colour = Pclass), lwd = 1) + ylab("Probability of Survival") + xlab("Age of passenger") + facet_wrap(vars(Sex)) + scale_fill_discrete(name = "Pclass", labels = c("1st class", "2nd class", "3rd class")) + labs(colour = "Passenger class", fill = "Passenger class") + scale_colour_discrete(name = "Pclass", labels = c("1st class", "2nd class", "3rd class"))
+  geom_ribbon(aes(ymin = lower, 
+                  ymax = upper, 
+                  fill = Pclass), 
+              alpha = .2) +
+  geom_line(aes(colour = Pclass), lwd = 1) + 
+  ylab("Probability of Survival") + 
+  xlab("Age of passenger") + 
+  facet_wrap(vars(Sex)) + 
+  scale_fill_discrete(name = "Pclass", 
+                      labels = c("1st class", "2nd class", "3rd class")) +
+  labs(colour = "Passenger class", fill = "Passenger class") +
+  scale_colour_discrete(name = "Pclass", 
+                        labels = c("1st class", "2nd class", "3rd class"))
   
 ```
 

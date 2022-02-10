@@ -185,7 +185,7 @@ If you have questions about the exercises, please contact [Gerko Vink](mailto::G
 
 ### This meeting
 In this meeting, [Prof. dr. Peter van der Heijden](https://www.uu.nl/medewerkers/pgmvanderheijden)
-will teach us about *Prediction and uncertainty*. <br>
+will teach us about *Prediction and effect sizes*. <br>
 
 During and after the lecture there will be plenty of room for questions and discussion. To aid the understanding of this meeting's theory we have prepared a series of exercises for you. You can find all meeting materials in the column to the right. 
 
@@ -209,7 +209,7 @@ Please find here any useful links relating to this meeting's materials
 ### Lecture slides
 Please find the lecture slides and relevant materials below:
 
-- [Slides for this meeting](files/rabobank_day2_slides.pdf)
+- [Slides for this meeting](files/LECTURE 2.pdf)
 
 ### Exercises in JASP
 [JASP](https://jasp-stats.org) is an open-source statistics processor aimed at provinding an easy to use intuitive interface for standard analysis procedures. If you have little experience with statistics and programming, we recommend following the exercises in JASP. 
@@ -221,13 +221,10 @@ If you have questions about the exercises, please contact [Gerko Vink](mailto:G.
 ### Exercises in `R`
 [`R`](https://www.r-project.org) is a free software environment that serves as the de facto standard for statistical computing and graphics. If you have experience with statistics and programming, we recommend following the exercises in `R`. 
 
-- [Exercise in `R`]()
+- [Exercise in `R`](practicals/day2/R/R_logreg.html)
+- [A document](practicals/day2/R/Logisticregression_intervals.html) that simulates prediction and confidence intervals; both obtained parametrically and via the bootstrap. 
 
-If you have questions about the exercises, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
-
-**Other useful links for the `R` exercises: **
-
-
+If you have questions about the exercises or any of the other documents, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
 
 # Meeting 3
 

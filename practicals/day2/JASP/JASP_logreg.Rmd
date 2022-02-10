@@ -121,7 +121,7 @@ We can see a clear difference between `balance` and `income` in this estimation 
 
 _4_ **Now add `student` and study if there is a difference in the probability of creditcard fraud for students and non-students**
 
-First, we can see that the Deviance has decreased, as have the AIC and BIC. That indicates an improvement in model fit. 
+First, we can see that the Deviance has decreased, as has the AIC. BIC increased slightly. That indicates an improvement in model fit, albeit a minimal improvement. 
 
 ![](img/img11.png){width=100%}
 <br><br> From the coefficients table, we do see however that `income` is not a significant predictor anymore, when `student` is entered into the model. 
