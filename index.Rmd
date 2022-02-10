@@ -169,7 +169,7 @@ If you have questions about the exercises, please contact [Gerko Vink](mailto:G.
 
 - [Introduction to `R`](practicals/day1/R/R1.html)
 - [Regression in `R`](practicals/day1/R/R2.html)
-- [My output of the challenge](practicals/day1/R/Challenge.html) 
+- [My output for the challenge](practicals/day1/R/Challenge.html) 
 - [Video discussion of the challenge](https://www.dropbox.com/s/m9hb4xmdac4ufvz/Challenge_R.mp4?dl=0)
 
 If you have questions about the exercises, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
