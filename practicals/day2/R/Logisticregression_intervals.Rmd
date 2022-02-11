@@ -40,7 +40,8 @@ pre { /* Code block - determines code spacing between lines */
 
 ---
 
-The aim of this document is to highlight some workflows for generating confidence intervals and prediction intervals for individual values. I outline parametric and bootstrap approaches and demonstrate that these approaches are equivalent - at least for a sufficient number of bootstraps. 
+The aim of this document is to highlight some workflows for generating confidence intervals and prediction intervals for individual values. I outline parametric and bootstrap approaches and demonstrate that these approaches are equivalent; at least for a sufficient number of bootstraps. 
+
 ---
 
 # Load required packages
@@ -360,8 +361,8 @@ all.equal(pred$se.fit,SE.manual) # SAME
 ```
 That works. 
 
-## Is this the same as Agresti?
-Agresti states:
+## Is this the same as the interval stated in e.g. the book by Agresti?
+[Agresti](https://www.wiley.com/en-gb/Categorical+Data+Analysis%2C+3rd+Edition-p-9780470463635) (pp. 170) states:
 
 ![](Agresti.png)
 Let's find out:
