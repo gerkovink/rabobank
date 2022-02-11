@@ -182,7 +182,7 @@ First, we can see that the Deviance has decreased, as has the AIC. BIC increased
 fit2 %>% summary %>% .$coefficients
 ```
 
-From the coefficients table, we do see however that `income` is not a significant predictor anymore, when `student` is entered into the model. 
+The logodds for default decrease with being a student. From the coefficients table, we do also see however that `income` is not a significant predictor anymore, when `student` is entered into the model. 
 
 ```{r}
 pred <- ifelse(predict(fit2) > .5, "Yes", "No") %>% as.factor

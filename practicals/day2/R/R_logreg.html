@@ -436,7 +436,7 @@ fit$deviance   # model without student</code></pre>
 ## income       3.033450e-06 8.202615e-06   0.369815  7.115203e-01
 ## balance      5.736505e-03 2.318945e-04  24.737563 4.219578e-135
 ## studentYes  -6.467758e-01 2.362525e-01  -2.737646  6.188063e-03</code></pre>
-<p>From the coefficients table, we do see however that <code>income</code> is not a significant predictor anymore, when <code>student</code> is entered into the model.</p>
+<p>The logodds for default decrease with being a student. From the coefficients table, we do also see however that <code>income</code> is not a significant predictor anymore, when <code>student</code> is entered into the model.</p>
 <pre class="r"><code>pred &lt;- ifelse(predict(fit2) &gt; .5, &quot;Yes&quot;, &quot;No&quot;) %&gt;% as.factor
 confusionMatrix(pred, Default$default)</code></pre>
 <pre><code>## Confusion Matrix and Statistics

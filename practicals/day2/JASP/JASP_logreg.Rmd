@@ -124,7 +124,7 @@ _4_ **Now add `student` and study if there is a difference in the probability of
 First, we can see that the Deviance has decreased, as has the AIC. BIC increased slightly. That indicates an improvement in model fit, albeit a minimal improvement. 
 
 ![](img/img11.png){width=100%}
-<br><br> From the coefficients table, we do see however that `income` is not a significant predictor anymore, when `student` is entered into the model. 
+<br><br> The logodds for defaulting on credit card payment decrease with being a student. From the coefficients table, we do also see however that `income` is not a significant predictor anymore, when `student` is entered into the model. 
 
 When studying the confusion matrix we see that the diagonal has decreased with respect to the previous model. So we have obtained a parametrically more sound model that makes more mistakes in predicting `default`. 
 
@@ -133,9 +133,11 @@ When studying the confusion matrix we see that the diagonal has decreased with r
 ---
 
 # Head Injury data
-The `headInjury.csv` data frame has 3121 rows and 11 columns. The data were simulated according to a simple logistic regression model to match roughly the clinical characteristics of a sample of individuals who suffered minor head injuries.
+The `headInjury.csv` data frame from [this book](https://www.cambridge.org/core/books/data-analysis-and-graphics-using-r/E04AEC5BCEF09D2E51A63EB5A8CB0680) by John Maindonald and W. John Braun has 3121 rows and 11 columns. The data were simulated according to a simple logistic regression model to match roughly the clinical characteristics of a sample of individuals who suffered minor head injuries.
 
-_1_ **Download the data and load it in `JASP`**
+---
+
+_5_ **Download the data and load it in `JASP`**
 
 The data can be [obtained here](headInjury.csv)
 
@@ -159,7 +161,7 @@ This data frame contains the following columns:
 
 ---
 
-_2_ **Patients whose risk is sufficiently high will be sent for CT (computed tomography). Using a risk threshold of 0.025 (2.5%), turn the result into a decision rule for use of CT.**
+_6_ **Patients whose risk is sufficiently high will be sent for CT (computed tomography). Using a risk threshold of 0.025 (2.5%), turn the result into a decision rule for use of CT.**
 
 This may seem as a more difficult question, but it is actually quite straigthforward. First we need to fit the logistic model where we predict `clinically.important.brain.injury` from the other variables. 
 
