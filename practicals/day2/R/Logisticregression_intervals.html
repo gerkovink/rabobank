@@ -275,6 +275,9 @@ pre { /* Code block - determines code spacing between lines */
 }
 </style>
 <hr />
+<div id="the-aim-of-this-document-is-to-highlight-some-workflows-for-generating-confidence-intervals-and-prediction-intervals-for-individual-values.-i-outline-parametric-and-bootstrap-approaches-and-demonstrate-that-these-approaches-are-equivalent---at-least-for-a-sufficient-number-of-bootstraps." class="section level2">
+<h2>The aim of this document is to highlight some workflows for generating confidence intervals and prediction intervals for individual values. I outline parametric and bootstrap approaches and demonstrate that these approaches are equivalent - at least for a sufficient number of bootstraps.</h2>
+</div>
 <div id="load-required-packages" class="section level1">
 <h1>Load required packages</h1>
 <pre class="r"><code>library(tidyverse)</code></pre>
@@ -317,6 +320,7 @@ set.seed(123)</code></pre>
 </div>
 <div id="grab-the-titanic-data" class="section level1">
 <h1>Grab the <code>titanic</code> data</h1>
+<p>We start with the titanic data set, that can be grabbed from my website.</p>
 <pre class="r"><code>con &lt;- url(&quot;https://www.gerkovink.com/erasmus/Day%202/Part%20D/titanic.csv&quot;)
 titanic &lt;- read_csv(con)</code></pre>
 <pre><code>## Rows: 887 Columns: 8</code></pre>
@@ -331,6 +335,7 @@ titanic &lt;- read_csv(con)</code></pre>
 </div>
 <div id="some-data-editing" class="section level1">
 <h1>Some data editing</h1>
+<p>I make sure that the categorical variables are correctly coded as factors, and I add a row indicator. We need this indicator later on, when we are using the bootstrap. Otherwise we cannot relate the bootstrapped estimates to the orginal cases.</p>
 <pre class="r"><code>titanic %&lt;&gt;% 
   mutate(Pclass = factor(Pclass, labels = c(&quot;1st class&quot;, &quot;2nd class&quot;, &quot;3rd class&quot;)), 
          Survived = factor(Survived, labels = c(&quot;No&quot;, &quot;Yes&quot;)), 
@@ -339,19 +344,23 @@ titanic &lt;- read_csv(con)</code></pre>
 </div>
 <div id="draw-10000-bootstrapped-sets" class="section level1">
 <h1>Draw 10000 bootstrapped sets</h1>
+<p>I draw 10,000 bootstrapped samples out of the <code>titanic</code> set, where each sample is of the same length (<span class="math inline">\(N=887\)</span>) and every row is randomly sampled with replacement.</p>
 <pre class="r"><code>boot &lt;- replicate(n = 10000, 
                   expr = titanic[sample(nrow(titanic), 
                                         replace = TRUE), ], 
                   simplify = FALSE)</code></pre>
+<p>The <code>simplify = FALSE</code> statement is to keep the list structure in the object <code>boot</code>. I can then, later on, use this list structure to run my functional programming over.</p>
 <hr />
 </div>
 <div id="fit-logistic-model-on-true-data-set" class="section level1">
 <h1>Fit logistic model on true data set</h1>
+<p>This is the baseline model on the observed (not bootstrapped) data</p>
 <pre class="r"><code>fit &lt;- titanic %$% 
   glm(Survived ~ Pclass + Sex + Age, family = binomial(link = &quot;logit&quot;))</code></pre>
 <hr />
 <div id="coefficients" class="section level2">
 <h2>Coefficients</h2>
+<p>Model <code>fit</code> has the following coefficients:</p>
 <pre class="r"><code>fit %&gt;% coef()</code></pre>
 <pre><code>##     (Intercept) Pclass2nd class Pclass3rd class         Sexmale             Age 
 ##      3.63492051     -1.19911501     -2.45544258     -2.58872040     -0.03427498</code></pre>
@@ -359,6 +368,7 @@ titanic &lt;- read_csv(con)</code></pre>
 </div>
 <div id="parameter-cis" class="section level2">
 <h2>Parameter CI’s</h2>
+<p>Model <code>fit</code> has the following corresponding coefficients confidence intervals (95%):</p>
 <pre class="r"><code>fit %&gt;% confint</code></pre>
 <pre><code>## Waiting for profiling to be done...</code></pre>
 <pre><code>##                      2.5 %     97.5 %
@@ -371,6 +381,7 @@ titanic &lt;- read_csv(con)</code></pre>
 </div>
 <div id="standard-errors" class="section level2">
 <h2>Standard errors</h2>
+<p>The coefficient standard errors are:</p>
 <pre class="r"><code>fit %&gt;% summary %&gt;% .$coefficients</code></pre>
 <pre><code>##                    Estimate  Std. Error    z value     Pr(&gt;|z|)
 ## (Intercept)      3.63492051 0.370455409   9.812032 9.993507e-23
@@ -383,6 +394,7 @@ titanic &lt;- read_csv(con)</code></pre>
 </div>
 <div id="fit-logistic-models-on-all-bootstrap-sets" class="section level1">
 <h1>Fit logistic models on all bootstrap sets</h1>
+<p>Now we repeat the model fit on all bootstrapped sets. I use <code>purrr::map()</code> to fit the same generalized linear model on each listed dimension in <code>boot</code>, where every listed dimension contains a single bootstrapped sample from <code>titanic</code>.</p>
 <pre class="r"><code>bootfit &lt;- boot %&gt;% 
   map(~.x %$% 
         glm(Survived ~ Pclass + Sex + Age, 
@@ -390,6 +402,7 @@ titanic &lt;- read_csv(con)</code></pre>
 <hr />
 <div id="bootstrapped-coefficients" class="section level2">
 <h2>Bootstrapped Coefficients</h2>
+<p>The average bootstrapped coefficient are:</p>
 <pre class="r"><code>bootcoef &lt;- bootfit %&gt;% 
   map(~.x %&gt;% coef()) %&gt;% 
   do.call(&quot;rbind&quot;, .) %&gt;% 
@@ -404,6 +417,7 @@ bootcoef %&gt;% colMeans()</code></pre>
 </div>
 <div id="bootstrapped-cis" class="section level2">
 <h2>Bootstrapped CI’s</h2>
+<p>The average bootstrapped percentile-based confidence intervals are:</p>
 <pre class="r"><code>bootcoef %&gt;% 
   sapply(., function(x) quantile(x, c(.025, .975))) %&gt;% t()</code></pre>
 <pre><code>##                        2.5%       97.5%
@@ -416,6 +430,7 @@ bootcoef %&gt;% colMeans()</code></pre>
 </div>
 <div id="bootstrapped-ses" class="section level2">
 <h2>Bootstrapped SE’s</h2>
+<p>The correponding bootstrapped standard errors across the bootstrapped parameters are :</p>
 <pre class="r"><code>bootcoef %&gt;% 
   sapply(., sd)</code></pre>
 <pre><code>##     (Intercept) Pclass2nd class Pclass3rd class         Sexmale             Age 
@@ -425,6 +440,7 @@ bootcoef %&gt;% colMeans()</code></pre>
 </div>
 <div id="comparisons" class="section level1">
 <h1>Comparisons</h1>
+<p>I now compare the original parametrically obtained estimates to the estimates obtained via the bootstrap.</p>
 <hr />
 <div id="coefficients-1" class="section level2">
 <h2>Coefficients</h2>
@@ -472,14 +488,17 @@ bootcoef %&gt;% colMeans()</code></pre>
 ## Pclass3rd class 0.253223337 0.26135932
 ## Sexmale         0.187006290 0.18732573
 ## Age             0.007160088 0.00755088</code></pre>
+<p>We can see that the bootstrap is a valid approximation to the parameters and statistics obtained on the original data set.</p>
 <hr />
 </div>
 </div>
 <div id="individual-intervals" class="section level1">
 <h1>Individual intervals</h1>
+<p>Now let’s calculate individual intervals via the bootstrap</p>
 <hr />
 <div id="bootstrap-individual-interval" class="section level2">
 <h2>Bootstrap individual interval</h2>
+<p>The following codeblock calculates for every case in the <code>titanic</code> data the predicted value, the standard error of the predicted value and the corresponding row number. I combine these into a <code>tibble</code> with 3 columns: one for the rows, one for the predictions and one for the corresponding standard error.</p>
 <pre class="r"><code># create matrix with size bootstrap \times cases
 pred.matrix &lt;- bootfit %&gt;% 
   map(~.x %&gt;% predict()) %&gt;% 
@@ -497,9 +516,9 @@ rows.matrix &lt;- boot %&gt;%
 pred.data &lt;- data.frame(rows = c(rows.matrix),
                         pred = c(pred.matrix),
                         se = c(se.matrix)) %&gt;% 
-  as_tibble()
-
-# calculate centroids and quantiles
+  as_tibble()</code></pre>
+<p>Because the rows differ across the bootstrapped sets, I calculate the individual predictions and intervals over the corresponding row identifier. This means that on average, each row will be bootstrapped 10,000 times - but realized bootstrapped lengths may differ over the row numbers.</p>
+<pre class="r"><code># calculate centroids and quantiles
 pred &lt;- pred.data %&gt;% group_by(rows) %&gt;% 
   summarize(est = mean(pred), 
             se.fit = mean(se),
@@ -535,6 +554,7 @@ pred</code></pre>
 </div>
 <div id="compare-predictions" class="section level2">
 <h2>Compare predictions</h2>
+<p>If we compare the predicted values obtained on the original data to the predicted values obtained via the bootstrap in a Q-Q plot, we find that their distribution is very close. Increasing the number of bootstraps will bring them closer.</p>
 <pre class="r"><code>plot(x = fit %&gt;% predict, 
      y = pred$est, 
      xlab = &quot;fitted predictions&quot;,
@@ -543,6 +563,7 @@ pred</code></pre>
 </div>
 <div id="compare-ses" class="section level2">
 <h2>Compare se’s</h2>
+<p>The same holds for the estimated standard errors.</p>
 <pre class="r"><code>y_se &lt;- fit %&gt;% 
   predict(se = TRUE) %&gt;% 
   as.data.frame()

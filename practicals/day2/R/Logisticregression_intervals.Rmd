@@ -40,6 +40,9 @@ pre { /* Code block - determines code spacing between lines */
 
 ---
 
+The aim of this document is to highlight some workflows for generating confidence intervals and prediction intervals for individual values. I outline parametric and bootstrap approaches and demonstrate that these approaches are equivalent - at least for a sufficient number of bootstraps. 
+---
+
 # Load required packages
 ```{r}
 library(tidyverse)
@@ -57,6 +60,7 @@ set.seed(123)
 ---
 
 # Grab the `titanic` data
+We start with the titanic data set, that can be grabbed from my website. 
 ```{r warning=FALSE}
 con <- url("https://www.gerkovink.com/erasmus/Day%202/Part%20D/titanic.csv")
 titanic <- read_csv(con)
@@ -65,6 +69,7 @@ titanic <- read_csv(con)
 ---
 
 # Some data editing
+I make sure that the categorical variables are correctly coded as factors, and I add a row indicator. We need this indicator later on, when we are using the bootstrap. Otherwise we cannot relate the bootstrapped estimates to the orginal cases. 
 ```{r}
 titanic %<>% 
   mutate(Pclass = factor(Pclass, labels = c("1st class", "2nd class", "3rd class")), 
@@ -75,16 +80,19 @@ titanic %<>%
 ---
 
 # Draw 10000 bootstrapped sets
+I draw 10,000 bootstrapped samples out of the `titanic` set, where each sample is of the same length ($N=887$) and every row is randomly sampled with replacement. 
 ```{r}
 boot <- replicate(n = 10000, 
                   expr = titanic[sample(nrow(titanic), 
                                         replace = TRUE), ], 
                   simplify = FALSE)
 ```
+The `simplify = FALSE` statement is to keep the list structure in the object `boot`. I can then, later on, use this list structure to run my functional programming over. 
 
 ---
 
 # Fit logistic model on true data set
+This is the baseline model on the observed (not bootstrapped) data
 ```{r}
 fit <- titanic %$% 
   glm(Survived ~ Pclass + Sex + Age, family = binomial(link = "logit"))
@@ -93,6 +101,7 @@ fit <- titanic %$%
 ---
 
 ## Coefficients
+Model `fit` has the following coefficients:
 ```{r}
 fit %>% coef()
 ```
@@ -100,6 +109,7 @@ fit %>% coef()
 ---
 
 ## Parameter CI's
+Model `fit` has the following corresponding coefficients confidence intervals (95%):
 ```{r}
 fit %>% confint
 ```
@@ -107,6 +117,7 @@ fit %>% confint
 ---
 
 ## Standard errors
+The coefficient standard errors are:
 ```{r}
 fit %>% summary %>% .$coefficients
 ```
@@ -114,6 +125,7 @@ fit %>% summary %>% .$coefficients
 ---
 
 # Fit logistic models on all bootstrap sets
+Now we repeat the model fit on all bootstrapped sets. I use `purrr::map()` to fit the same generalized linear model on each listed dimension in `boot`, where every listed dimension contains a single bootstrapped sample from `titanic`.
 ```{r}
 bootfit <- boot %>% 
   map(~.x %$% 
@@ -124,6 +136,7 @@ bootfit <- boot %>%
 ---
 
 ## Bootstrapped Coefficients
+The average bootstrapped coefficient are:
 ```{r}
 bootcoef <- bootfit %>% 
   map(~.x %>% coef()) %>% 
@@ -137,6 +150,7 @@ ggpairs(bootcoef)
 ---
 
 ## Bootstrapped CI's
+The average bootstrapped percentile-based confidence intervals are:
 ```{r}
 bootcoef %>% 
   sapply(., function(x) quantile(x, c(.025, .975))) %>% t()
@@ -145,6 +159,7 @@ bootcoef %>%
 ---
 
 ## Bootstrapped SE's
+The correponding bootstrapped standard errors across the bootstrapped parameters are :
 ```{r}
 bootcoef %>% 
   sapply(., sd)
@@ -153,6 +168,8 @@ bootcoef %>%
 ---
 
 # Comparisons
+
+I now compare the original parametrically obtained estimates to the estimates obtained via the bootstrap. 
 
 ---
 
@@ -180,13 +197,18 @@ data.frame(original = fit %>% summary %>% .$coefficients %>% .[, 2],
   sapply(., sd))
 ```
 
+We can see that the bootstrap is a valid approximation to the parameters and statistics obtained on the original data set.
+
 ---
 
 # Individual intervals
 
+Now let's calculate individual intervals via the bootstrap
+
 ---
 
 ## Bootstrap individual interval
+The following codeblock calculates for every case in the `titanic` data the predicted value, the standard error of the predicted value and the corresponding row number. I combine these into a `tibble` with 3 columns: one for the rows, one for the predictions and one for the corresponding standard error. 
 ```{r}
 # create matrix with size bootstrap \times cases
 pred.matrix <- bootfit %>% 
@@ -206,7 +228,10 @@ pred.data <- data.frame(rows = c(rows.matrix),
                         pred = c(pred.matrix),
                         se = c(se.matrix)) %>% 
   as_tibble()
+```
 
+Because the rows differ across the bootstrapped sets, I calculate the individual predictions and intervals over the corresponding row identifier. This means that on average, each row will be bootstrapped 10,000 times - but realized bootstrapped lengths may differ over the row numbers. 
+```{r}
 # calculate centroids and quantiles
 pred <- pred.data %>% group_by(rows) %>% 
   summarize(est = mean(pred), 
@@ -230,6 +255,7 @@ pred
 ---
 
 ## Compare predictions
+If we compare the predicted values obtained on the original data to the predicted values obtained via the bootstrap in a Q-Q plot, we find that their distribution is very close. Increasing the number of bootstraps will bring them closer. 
 ```{r}
 plot(x = fit %>% predict, 
      y = pred$est, 
@@ -238,6 +264,7 @@ plot(x = fit %>% predict,
 ```
 
 ## Compare se's
+The same holds for the estimated standard errors. 
 ```{r}
 y_se <- fit %>% 
   predict(se = TRUE) %>% 
