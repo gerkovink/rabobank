@@ -466,7 +466,7 @@ confusionMatrix(pred, Default$default)</code></pre>
 ##                                          
 ##        &#39;Positive&#39; Class : No             
 ## </code></pre>
-<p>When studying the confusion matrix we see that the population of the diagonal for model <code>fit1</code> has decreased with respect to the previous model <code>fit</code>. So we have obtained a parametrically better model that makes more mistakes in predicting <code>default</code>.</p>
+<p>When studying the confusion matrix we see that the population of the diagonal for model <code>fit1</code> has increased with respect to the previous model <code>fit</code>. So we have obtained a parametrically ‘better’ model that makes fewer mistakes in predicting <code>default</code>. We have to note that we’re only doing a bit better than the baseline model. The prevalence is already .9667, which indicates that if we would predict everything as <code>No default</code>, we would have 96.67% correctly predicted. The Kappa indicates this: our model is a little over 1/3 (.354) on the way to a perfect solution, when compared to the baseline model.</p>
 <hr />
 </div>
 <div id="head-injury-data" class="section level1">

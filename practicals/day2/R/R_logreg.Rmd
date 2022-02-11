@@ -189,7 +189,7 @@ pred <- ifelse(predict(fit2) > .5, "Yes", "No") %>% as.factor
 confusionMatrix(pred, Default$default)
 ```
 
-When studying the confusion matrix we see that the population of the diagonal for model `fit1` has decreased with respect to the previous model `fit`. So we have obtained a parametrically better model that makes more mistakes in predicting `default`. 
+When studying the confusion matrix we see that the population of the diagonal for model `fit1` has increased with respect to the previous model `fit`. So we have obtained a parametrically 'better' model that makes fewer mistakes in predicting `default`. We have to note that we're only doing a bit better than the baseline model. The prevalence is already .9667, which indicates that if we would predict everything as `No default`, we would have 96.67% correctly predicted. The Kappa indicates this: our model is a little over 1/3 (.354) on the way to a perfect solution, when compared to the baseline model. 
 
 ---
 
