@@ -263,13 +263,20 @@ Please find the lecture slides and relevant materials below:
 
 - [Exercise in JASP](practicals/day3/JASP/JASP_exercise.html)
 
+I will add a video discussion to this exercise next Wednesday. 
+
 If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl)
 
 ### Exercises in `R`
 [`R`](https://www.r-project.org) is a free software environment that serves as the de facto standard for statistical computing and graphics. If you have experience with statistics and programming, we recommend following the exercises in `R`. 
 
 - [Exercise in `R`](practicals/day3/R/R_exercise.html)
-- [A great blog about evaluation metrics in `R`](https://blog.revolutionanalytics.com/2016/03/com_class_eval_metrics_r.html)
+
+I will add a video discussion to this exercise next Wednesday. 
+
+- [A great blog](https://blog.revolutionanalytics.com/2016/03/com_class_eval_metrics_r.html) about manually calculating some of the discussed evaluation metrics in `R`. 
+
+
 
 If you have questions about the exercises or any of the other documents, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
 
