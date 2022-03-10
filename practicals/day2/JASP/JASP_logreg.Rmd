@@ -46,7 +46,7 @@ In this exercise we focus on logistic regression. We use logistic regression whe
 
 # Default data
 
-We start with the `Default` data set from the book [Introduction to Statitistical Learning](https://www.statlearning.com) by James, Witten, Hastie & Tibshirani (2021 - 2nd edition). The data set contains  information about `default` on creditcard payments for `students` and non-students, with for every respondent measurements on `income` and creditcard `balance`. 
+We start with the `Default` data set from the book [Introduction to Statistical Learning](https://www.statlearning.com) by James, Witten, Hastie & Tibshirani (2021 - 2nd edition). The data set contains  information about `default` on creditcard payments for `students` and non-students, with for every respondent measurements on `income` and creditcard `balance`. 
 
 ---
 

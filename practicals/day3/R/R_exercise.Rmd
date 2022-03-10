@@ -1,6 +1,8 @@
 ---
-title: "Logistic regression in R"
-author: "Gerko Vink"
+title: "Classification Algorithms in R"
+author: "UU Methodology and Statistics"
+params:
+  answers: true
 output: 
    html_document:
     toc: true
@@ -40,282 +42,941 @@ pre { /* Code block - determines code spacing between lines */
 
 ---
 
-# Packages used
-```{r message = FALSE, warning=FALSE}
-library(tidyverse)# for all things useful
-library(magrittr) # pipes
-library(ISLR)     # for the Default data
-library(DAAG)     # for the headInjury data
-library(ggplot2)  # plotting device
-library(GGally)   # for ggpairs()
-library(caret)    # for confusionMatrix()
+# Introduction
+
+---
+
+In this practical, we will focus on many multiple data sets and some popular classification methods: 
+
+- Credit card `Default`: KNN-classification and logistic regression
+- Survival in the `titanic` disaster: Support Vector Machines
+- Pima Indians Diabetes data: Tree-based models. 
+
+You can use the `Table of Contents` to the right to quickly navigate through this document. 
+
+---
+
+One of the packages we will use is `class`. For this, you will probably need to `install.packages("class")` before running the `library()` functions. `ISLR` is also a new package, that needs to be installed to access the `Default` data. This may hold for more packages that are defined below. I'd like to specifically mention [the `caret` package](https://topepo.github.io/caret/), which brings together the state-of-the-art in statistical learning applications across `R`. It is a wonderful package to run, compare and evaluate machine learning models in `R`. 
+
+```{r packages, warning = FALSE, message = FALSE}
+library(MASS)
+library(tidyverse)
+library(magrittr)
+library(class)
+library(ISLR)
+library(tidyverse)
+library(caret)
+library(kernlab)
+library(MLeval)
+library(pROC)
+```
+
+Before starting with the exercises, it is a good idea to set your seed, so that (1) your answers are reproducible and (2) you can compare your answers with the answers provided. 
+
+```{r seed1}
+set.seed(45)
 ```
 
 ---
 
-In this exercise we focus on logistic regression. We use logistic regression when we would like to model a dichotomous response: an outcome variable that takes only two levels. The predictors can - as with linear regression - be continuous and/or categorical/dichotomous. 
+# Part A: Default data
 
 ---
 
-# Default data
-
-We start with the `Default` data set from the book [Introduction to Statitistical Learning](https://www.statlearning.com) by James, Witten, Hastie & Tibshirani (2021 - 2nd edition). The data set contains  information about `default` on creditcard payments for `students` and non-students, with for every respondent measurements on `income` and creditcard `balance`. 
+The `Default` data set (from package `ISLR`) contains credit card loan data for 10.000 people. The goal is to classify credit card cases as `yes` or `no` based on whether they will default on their loan.
 
 ---
 
-_1_ **Inspect the `Default` data set**
+A1. __Create a scatterplot of the `Default` dataset, where `balance` is mapped to the x position, `income` is mapped to the y position, and `default` is mapped to the colour. Can you see any interesting patterns already?__ 
 
-When we look at the summary statistics for the data variables, we find the following descriptive statistics:
-```{r}
-Default %>% summary
+---
+
+```{r defaultplot1, include = params$answers}
+ISLR::Default %>% 
+  arrange(default) %>% # so the yellow dots are plotted after the blue ones
+  ggplot(aes(x = balance, y = income, colour = default)) +
+  geom_point(size = 1.3) +
+  theme_minimal()
 ```
 
-We see that there are no missing values in the data. We also get information about the means and the standard deviation for `balance` and `income`. We get no information on these statistics for the categorical (in this case dichotomous) variables, as it would not make sense. The minimum and maximum values can be quickly inspected; these values can often be used to spot implausible or impossible values. For example, a negative income out of labour would not be possible. On the other hand, a negative credit card balance would be possible if someone were e.g. reimbursed on their card after a paymant had been made. In this case there are no negative `balance` or `income` values. 
+It is clear that people with a larger remaining balance are more likely to default. When you look carefully, you may be able to identify two clusters in the data. One cluster for lower incomes and one cluster for higher incomes. The probability to default follows the same pattern in both clusters: higher remaining balance means an increase in probability to default. 
 
-We see that 9667 out of 10000 cases are not defaulting on their creditcard payment. That would be 96.67% of total cases. One important fact: the data are quite imbalanced: very few cases are defaulting ont their credit card payment. This is an important fact, because if we would simply *predict* everyone to **not default on their credit card payment**, we would be 96.67% accurate. 
 
-The `student` distribution is also imbalanced, but to a much less extreme extent. 2944 cases out of the 10000 observed are students. That is 29.44%. 
+---
 
-```{r warning=FALSE, message=FALSE}
+A2. __Add the line `+ facet_grid(cols = vars(student))` to the plot. What do you see?__
+
+---
+
+
+```{r defaultplot2}
 Default %>% 
-  ggpairs()
+  arrange(default) %>% # so the yellow dots are plotted after the blue ones
+  ggplot(aes(x = balance, y = income, colour = default)) +
+  geom_point(size = 1.3) +
+  theme_minimal() +
+  facet_grid(cols = vars(student))
 ```
 
-When we study the distribution plots we can identify the same information as in the tables. However, from the plots we can infer far more inctricate patternsthan from the tables alone. 
 
-It is apparent that `student` is bimodal. One of the reasons for bimodality may be that there is a mixture of distributions for being a student or not being a student. When we study the above plots, this becomes very clear.
-
-In the row and column `student` we can clearly see that there is a different distribution for `income`. That is, the distribution for `income` is less variable and has a lower mean for when `student` equals *Yes*. This of course makes sense: students generally have a lower income than non-students. Another feature that we see is that cases that `default` tend to have a higher `balance`. 
-
-When we look at the boxplots, we see the same information as in the distribution plots, but now in terms of quartiles (each quart of the boxplot contains about 25% of cases) and the median *the bold line in the middle). The more symmetric a boxplot is, the more symmetric the data are distributed. 
+Clearly, if we facet the plot over students and non-students, we see that the lower income group is well-represented by the students. 
 
 ---
 
-_2_ **Study the relation between `default`, `income` and `balance`. Can we use these variables to predict creditcard `default`?**
-
-```{r}
-fit <- Default %$% 
-  glm(default ~ income + balance, 
-      family = binomial(link ="logit"))
-
-AIC(fit)
-BIC(fit)
-```
-
-Let's go through the output that we have generated. We start with the model summary:
-
-*AIC* and *BIC* are model fit statistics. These statistics work on the scale of the log-likelihood. The log of zero (no deviance) would be $\text{log}(0) = -\inf$. These statistics take fit and complexity into account. Lower values are therefore preferred. AIC and BIC for a single model are not very informative, other than that you can see if the model is perfect or not. AIC and BIC are useful when comparing models.
-
-```{r}
-fit %>% 
-  summary
-```
-
-With linear regression we had the `Sum of Squares (SS)`. Its logistic counterpart is the `Deviance (D)`. 
-
- -  Deviance is the fit of the observed values to the expected values. 
- 
-With logistic regression we aim to maximize the `likelihood`, which is equivalent to minimizing the deviance. The likelihood is the (joint) probability of the observed values, given the current model parameters.
-
-In normally distributed data: $\text{SS}=\text{D}$.
+A3. __Transform "student" into a dummy variable using `ifelse()` (0 = not a student, 1 = student). Then, randomly split the Default dataset into a training set `train` (80%) and a test set `test` (20%).__
 
 ---
 
-The next output table gives us information on the coefficients We see that the coefficients are very low, yet both coefficients are significant. We must realize that both the columns `balance` and `income` are measured in a large scale, hence the estimates are expected to be lower in size (imagine writing down 1 kilogram in grams or in metric tonnes - you'd have two completely different numbers because of the different scales). 
+```{r split, include = params$answers}
+# Create train/test split
+trainIndex <- createDataPartition(Default$default, p = .8, list = FALSE)
 
-The intercept denotes the estimate for the predicted outcome `default` when `balance` or `income` are zero. All estimates for the coefficients are logodds. The p-value comes from the Wald test that is used to determine statistical significance. The aim of the test it to test if the estimate is equal to zero (that is its null hypothesis). All estimates are highly significant. 
+Default %<>% 
+  mutate(student = ifelse(student == "Yes", 1, 0)) 
+  
+train <- Default[trainIndex, ]
+test <- Default[-trainIndex, ]
+```
 
 ---
 
-The next object that I'd like to consider is the confusion matrix.
-```{r}
-pred <- ifelse(predict(fit) > .5, "Yes", "No") %>% as.factor
-confusionMatrix(pred, Default$default)
-```
-
-A confusion matrix gives an indication about the performance of a logistic prediction effort. The diagonal would indicate cases being predicted conform the observed classification, i.e. `No` as `No` and `Yes` as `Yes`. The off-diagonal indicates errors. It is often useful to study the prediction matrix, as not every error may have the same cost. For example, in health care some prediction mistakes could cost lives while others may cost only money. 
-
-
-
-The last piece of output that we look at are the estimate plots.
-```{r warning = FALSE, message = FALSE}
-# for balance
-Default %>%
-  mutate(prob = predict(fit, type = "response")) %>%
-  ggplot(aes(balance, prob)) +
-  geom_point(alpha = 0.2) +
-  geom_smooth(method = "glm", 
-              method.args = list(family = "binomial")) +
-  xlab("Credit Card Balance") + 
-  ylab("Predicted obability of default")
-
-# for income
-Default %>%
-  mutate(prob = predict(fit, type = "response")) %>%
-  ggplot(aes(income, prob)) +
-  geom_point(alpha = 0.2) +
-  geom_smooth(method = "glm", 
-              method.args = list(family = "binomial")) +
-  xlab("Credit Card Balance") + 
-  ylab("Predicted probability of default")
-```
-
-We can see a clear difference between `balance` and `income` in this estimation effort: the probability to default is relatively invariant with `income`, but not as clearly as with `balance`. A higher credit card balance is related to a larger probability to default. The turning point for having a higher probability than $.50$ lies just below a credit card balance of 2000.
+## K-Nearest Neighbours
 
 ---
 
-_3_ **Now add `student` and study if there is a difference in the probability of creditcard fraud for students and non-students**
+Now that we have explored the dataset, we can start on the task of classification. We can imagine a credit card company wanting to predict whether a customer will default on the loan so they can take steps to prevent this from happening.
 
-```{r}
-fit2 <- Default %$% 
-  glm(default ~ income + balance + student, 
-      family = binomial(link ="logit"))
-fit$deviance   # model without student
-fit2$deviance  # model with student
-AIC(fit, fit2)
-BIC(fit, fit2)
-```
-
-First, we can see that the Deviance has decreased, as has the AIC. BIC increased slightly. That indicates an improvement in model fit, albeit a minimal improvement. 
-
-```{r}
-fit2 %>% summary %>% .$coefficients
-```
-
-The logodds for default decrease with being a student. From the coefficients table, we do also see however that `income` is not a significant predictor anymore, when `student` is entered into the model. 
-
-```{r}
-pred <- ifelse(predict(fit2) > .5, "Yes", "No") %>% as.factor
-confusionMatrix(pred, Default$default)
-```
-
-When studying the confusion matrix we see that the population of the diagonal for model `fit1` has increased with respect to the previous model `fit`. So we have obtained a parametrically 'better' model that makes fewer mistakes in predicting `default`. We have to note that we're only doing a bit better than the baseline model. The prevalence is already .9667, which indicates that if we would predict everything as `No default`, we would have 96.67% correctly predicted. The Kappa indicates this: our model is a little over 1/3 (.354) on the way to a perfect solution, when compared to the baseline model. 
+The first method we will be using is k-nearest neighbours (KNN). It classifies datapoints based on a majority vote of the k points closest to it. In `R`, the `class` package contains a `knn()` function to perform knn.
 
 ---
 
-# Head Injury data
-The `headInjury.csv` data frame has 3121 rows and 11 columns. The data were simulated according to a simple logistic regression model to match roughly the clinical characteristics of a sample of individuals who suffered minor head injuries.
+A4. __Create class predictions for the test set using the `knn()` function. Use `student`, `balance`, and `income` (but no basis functions of those variables) in the `train` dataset. Set `k` to 5. Store the predictions in a variable called `knn_5_pred`.__
 
 ---
 
-The head injury data set contains information on the following variables:
 
-This data frame contains the following columns:
-
-- `age.65`: age factor (0 = under 65, 1 = over 65).
-- `amnesia.before`: amnesia before impact (less than 30 minutes = 0, more than 30 minutes =1).
-- `basal.skull.fracture`: (0 = no fracture, 1 = fracture).
-- `GCS.decrease`: Glasgow Coma Scale decrease (0 = no deterioration, 1 = deterioration).
-- `GCS.13`: initial Glasgow Coma Scale (0 = not ‘13’, 1 = ‘13’).
-- `GCS.15.2hours`: Glasgow Coma Scale after 2 hours (0 = not ‘15’, 1 = '15').
-- `high.risk`: assessed by clinician as high risk for neurological intervention (0 = not high risk, 1 = high risk).
-- `loss.of.consciousness`: (0 = conscious, 1 = loss of consciousness).
-- `open.skull.fracture`: (0 = no fracture, 1 = fracture)
-- `vomiting`: (0 = no vomiting, 1 = vomiting)
-- `clinically.important.brain.injury`: any acute brain finding revealed on CT (0 = not present, 1 = present).
+```{r knn5, include = params$answers}
+knn_5_pred <- knn(
+  train = train %>% select(-default),
+  test  = test  %>% select(-default),
+  cl    = as_factor(train$default),
+  k     = 5
+)
+```
+The `knn_5_pred` object contains the predictions for the `test` data column `default`. These predictions are obtained by applying the `knn()` function on the `train` set. To be able to generate predictions, the `knn()` has been given the true classes/values (`cl`) from the training data set. The `knn()` function has not seen the true classes for the `test set. 
 
 ---
 
-_4_ **Patients whose risk is sufficiently high will be sent for CT (computed tomography). Using a risk threshold of 0.025 (2.5%), turn the result into a decision rule for use of CT.**
+A5. __Create two scatter plots with income and balance as in the first plot you made. One with the true class (`default`) mapped to the colour aesthetic, and one with the predicted class (`knn_5_pred`) mapped to the colour aesthetic.__
 
-This may seem as a more difficult question, but it is actually quite straigthforward. First we need to fit the logistic model where we predict `clinically.important.brain.injury` from the other variables. 
+_Hint: Add the predicted class `knn_5_pred` to the `test` dataset before starting your `ggplot()` call of the second plot. What do you see?_
 
-```{r}
-fit <- glm(clinically.important.brain.injury ~ ., 
-           family = binomial(link = "logit"), 
-           data = head.injury) 
-summary(fit)
+---
+
+```{r plotknn, results = "hold", include = params$answers}
+# first plot is the same as before
+test %>% 
+  arrange(default) %>% 
+  ggplot(aes(x = balance, y = income, colour = default)) +
+  geom_point(size = 1.3) + 
+  theme_minimal() +
+  labs(title = "True class")
+
+# second plot maps pred to colour
+bind_cols(test, default_pred = knn_5_pred) %>% 
+  arrange(default) %>% 
+  ggplot(aes(x = balance, y = income, colour = default_pred)) +
+  geom_point(size = 1.3) + 
+  theme_minimal() +
+  labs(title = "Predicted class (5nn)")
 ```
 
-A risk of 2.5% corresponds to the cutoff for a CT scan. This translates to a logit of $\log\left(\frac{.025}{1-.025}\right) = -3.663562$. In other words, any sum of variables that "lifts" the intercept above -3.66 would satisfy the cutoff. 
-
-For example, being over 65 (`age.65`) would already warrant a CT scan, as would coming into the ER with a basal skull fracture (`basal.skull.fracture`). Alternatively, having an open skull fracture (`open.skull.fracture`) alone is not enough to warrant a CT scan. It needs to be acompanied by any of the other significant checks in order to satisfy the risk threshold. 
+From these plots it is clear that there are quite some misclassifications. Many `No` predictions with `Yes` as true values, and vice versa. 
 
 ---
 
-# Titanic data
+A6. __Repeat the same steps, but now with a `knn_2_pred` vector generated from a 2-nearest neighbours algorithm. Are there any differences?__
 
-The `titanic` data set contains information on the fate of passengers on the fatal maiden voyage of the ocean liner ‘Titanic’. The task is to visualize the predicted probabilities of survival in two seperate plots: one plot for males and one plot for females. 
+---
 
-The data set [can be obtained here](Titanic.csv) or downloaded from the code block below.
+```{r knn2, include = params$answers}
+knn_2_pred <- knn(
+  train = train %>% select(-default),
+  test  = test  %>% select(-default),
+  cl    = train$default,
+  k     = 2
+)
+
+# repeat the second plot from the previous exercise on the new knn predictions
+bind_cols(test, default_pred = knn_2_pred) %>% 
+  arrange(default) %>% 
+  ggplot(aes(x = balance, y = income, colour = default_pred)) +
+  geom_point(size = 1.3) + 
+  theme_minimal() +
+  labs(title = "Predicted class (2nn)")
+```
+
+Compared to the KNN (K=5) model, more people get classified as `Yes`. Still, the KNN (K=2) model is far from perfect. t
+
+---
+
+## Confusion matrix
+
+---
+
+The confusion matrix is an insightful summary of the plots we have made and the correct and incorrect classifications therein. A confusion matrix can be made in `R` with the `confusionMatrix()` function from the `caret` package. 
+
+```{r confmat1}
+confusionMatrix(knn_2_pred, test$default)
+```
+
+---
+
+A7. __What would this confusion matrix look like if the classification were perfect?__
+
+---
+
+If the classification would be perfect, the confusion matrix would be:
+```{r confmatb, echo = FALSE}
+confusionMatrix(test$default, test$default)
+```
+
+---
+
+A8. __Make a confusion matrix for the 5-nn model and compare it to that of the 2-nn model. What do you conclude?__
+
+---
+
+```{r confmat3, include = params$answers}
+confusionMatrix(knn_5_pred, test$default)
+```
+The KNN (K=2) model has more true positives (`yes`-`yes`) but also more false
+positives (truly `No` in the Reference but predicted `Yes`). Overall the KNN (K=5) model has slightly better accuracy (proportion of correct classifications). However, although this accuracy is higher than if we would randomly assign `Yes` or `No` to cases, the performance of the model is identical to the performance when we would hava classified all values as `No`. 
+
+---
+
+## Logistic regression
+
+---
+
+KNN directly predicts the class of a new observation using a majority vote of the existing observations closest to it. In contrast to this, logistic regression predicts the `log-odds` of belonging to category 1. These log-odds can then be transformed to probabilities by performing an inverse logit transform:
+
+$$ p = \frac{1}{1+e^{-\alpha}}$$, where $\alpha$ indicates log-odds for being in class 1 and $p$ is the probability.
+
+Therefore, logistic regression is a `probabilistic` classifier as opposed to a `direct` classifier such as KNN: indirectly, it outputs a probability which can then be used in conjunction with a cutoff (usually 0.5) to classify new observations.
+
+Logistic regression in `R` happens with the `glm()` function, which stands for generalized linear model. Here we have to indicate that the residuals are modeled not as a gaussian (normal distribution), but as a `binomial` distribution.
+
+--- 
+
+A9. __Use `glm()` with argument `family = binomial` to fit a logistic regression model `fit` to the `train` data.__
+
+---
+
+```{r lrmod, include = params$answers}
+fit <- glm(default ~ ., family = binomial, data = train)
+```
+
+Now we have generated a model, we can use the `predict()` method to output the estimated probabilities for each point in the training dataset. By default `predict` outputs the log-odds, but we can transform it back using the inverse logit function of before or setting the argument `type = "response"` within the predict function. 
+
+---
+
+A10. __Visualise the predicted probabilities versus observed class for the training dataset in `fit`. You can choose for yourself which type of visualisation you would like to make. Write down your interpretations along with your plot.__
+
+---
+
+
+```{r visdif, include = params$answers}
+
+tibble(observed  = train$default, 
+       predicted = predict(fit, type = "response")) %>% 
+  ggplot(aes(y = predicted, x = observed, colour = observed)) +
+  geom_point(position = position_jitter(width = 0.2), alpha = .3) +
+  scale_colour_manual(values = c("dark blue", "orange"), guide = "none") +
+  theme_minimal() +
+  labs(y = "Predicted probability to default")
+```
+
+This plot shows the predicted probabilities (obtained with `predict(fit, type = "response")`) for all the points in the `test` set. We can see that the defaulting (`Yes`) category has a higher average probability for a default compared to the `No` category, but there are still data points in the `No` category with high predicted probability for defaulting. 
+
+One advantage of parametric procedures like logistic regression is that we get parameters (coefficients) we can interpret.
+
+---
+
+A11. __Look at the coefficients of the `fit` model and interpret the coefficient for `balance`. What would the probability of default be for a person who is not a student, has an income of 40000, and a balance of 3000 dollars at the end of each month? Is this what you expect based on the plots we've made before?__
+
+---
+
+```{r coefs, include = params$answers}
+
+coefs <- coef(fit)
+coefs["balance"]
+```
+The higher the `balance`, the higher the log-odds of defaulting. To be more precise: each dollar increase in `balance` increases the log-odds of defaulting by 0.0057
+Let's study all coefficients.
 ```{r}
-con <- url("https://www.gerkovink.com/rabobank/practicals/day2/R/Titanic.csv")
+coefs
+```
+Now, if we would like to calculate the predicted logodds of default for a person who is not a student (0 times the coefficient for `student`), has an income of 40000 (40000 multiplied with the coefficient for `income`) and a balance of 3000 dollars (3000 multiplied with the coefficient for `balance`), we can do the following to calculate the logodds directly:
+```{r}
+logodds <- coefs[1] + 0*coefs[2] + 40000*coefs[4] + 3000*coefs[3]
+```
+We can then convert the logodds to a probability by
+```{r}
+1 / (1 + exp(-logodds))
+```
+or as 
+```{r}
+plogis(logodds)
+```
+
+There is a probability of .999 of defaulting. This is in line with the plots we have seen before. this new data point would be all the way to the right.
+
+---
+
+## Visualising the effect of the balance variable
+
+In two steps, we will visualise the effect `balance` has on the predicted default probability.
+
+---
+
+A12. __Create a data frame called `balance_df` with 3 columns and 500 rows: `student` always 0, `balance` ranging from 0 to 3000, and `income` always the mean income in the `train` dataset.__
+
+---
+
+```{r marbal, include = params$answers}
+
+balance_df <- tibble(
+  student = rep(0, 500),
+  balance = seq(0, 3000, length.out = 500),
+  income  = rep(mean(train$income), 500)
+)
+
+```
+
+---
+
+A13. __Use this dataset as the `newdata` in a `predict()` call using `fit` to output the predicted probabilities for different values of `balance`. Then create a plot with the `balance_df$balance` variable mapped to x and the predicted probabilities mapped to y. Is this in line with what you expect?__
+
+---
+
+```{r marplot, include = params$answers}
+balance_df$predprob <- predict(fit, 
+                               newdata = balance_df, 
+                               type = "response")
+
+balance_df %>% 
+  ggplot(aes(x = balance, y = predprob)) +
+  geom_line(col = "dark blue", size = 1) +
+  theme_minimal()
+```
+
+Just before a `balance` of 2000 dollars in the first plot is where the ratio of defaults vs non-defaults is 50/50. This line is exactly what we would expect. 
+
+---
+
+A14. __Create a confusion matrix just as the one for the KNN models by using a cutoff predicted probability of 0.5. Does logistic regression perform better?__
+
+---
+
+```{r confmatlogreg, include = params$answers}
+
+pred_prob <- predict(fit, newdata = test, type = "response")
+pred_lr   <- factor(pred_prob > .5, labels = c("No", "Yes"))
+
+confusionMatrix(pred_lr, test$default)
+```
+
+Logistic regression performs better than KNN in every way - at least for our model on this data. Remember that we started with a random seed. Every procedure that uses random numbers thereafter has become seed dependent. This also holds for the `train`/`test` split that we realized. A different random split can therefore yield different results. Cross-validation - which I excluded in this practical - can give you an indication of the variance of this difference. 
+
+---
+
+# Part B: Titanic data 
+
+---
+
+Let's take the `titanic` data that we used before and fit the following four models on a training version (70% of cases) of that data set.
+
+1. A logistic regression model
+2. A linear kernel SVM
+3. A polynomial kernel SVM
+4. A radial kernel SVM
+
+Finally, compare the performance of all 4 techniques on the test version (30% of not yet used cases) of that data set. 
+
+---
+
+## Grab the data set
+We can use the following code block to directly load the data in our workspace:
+```{r}
+con <- url("https://www.gerkovink.com/datasets/titanic.csv")
 titanic <- read_csv(con)
 ```
 
-
 ---
 
-_5_ **Load and inspect [the dataset](Titanic.csv) and fit a logistic regression model aimed at predicting survival from all other recorded features and all possible interactions between predictors**. 
+## Prepare the data
+We need to take care of some columns that are not well-coded. Let's make all the measurement levels as they are supposed to be. That means factors into factors, ordered factors into ordered factors, etc. 
 ```{r}
-titanic %<>% mutate(Pclass = factor(Pclass), 
-                 Sex = factor(Sex))
+titanic %<>% 
+  mutate(Pclass   = factor(Pclass, 
+                         ordered = TRUE, 
+                         labels = c("1st class", "2nd class", "3rd class")), 
+         Survived = factor(Survived, 
+                           labels = c("Died", "Survived")))
+
+str(titanic)
+```
+The `%<>%` pipe returns the result of the pipe to the object. 
+
+---
+
+## Validation set
+Let's split the titanic data into a training and validation set. Before we do so, we fix the random number generator seed in order to allow for reproduction of our results. Any seed value will do. My favorite seed is `123`.
+```{r}
+set.seed(123)
+```
+Now we can split the data into a `test` and a `training` part. 
+```{r}
+idx <- createDataPartition(titanic$Survived, p = .7, list = FALSE)
+train <- titanic[idx, ]
+test <- titanic[-idx, ]
 ```
 
-I transform the categorical column `Pclass` to a factor as well as the dichotomous column `Sex`. 
+
+--- 
+
+## Modeling
+
+We now go through the four models where we predict `Survived` from the other features in `titanic` - with the exception of `Name`, naturally. If we would use `Name`, we would fit a zero-residual model: i.e. a model for every row seperately.
+
+For ease of coding we exclude the `Name` column from the `titanic` set. 
+```{r}
+train %<>% select(-Name)
+```
+Again, we use the `%<>%` pipe because it returns the result of the pipe to the object. 
+
+### Logistic regression model
+Let's fit the logistic regression model
+```{r}
+lm.train <- glm(Survived ~ ., 
+                data = train, 
+                family = binomial(link = "logit"))
+```
+And generate the predicted values
+```{r}
+lm.pred <- predict(lm.train, 
+                   newdata = test %>% select(-Name),
+                   type = "response") 
+```
+
+To inspect the performance of the final (and only) model:
+```{r}
+confusionMatrix(ifelse(lm.pred < .5, "Died", "Survived") %>% factor, 
+                test$Survived)
+```
+
+---
+
+### Linear kernel SVM
+Let's train the linear kernel support vector machine
+```{r linearSVM, cache = TRUE}
+train_control <- trainControl(method="repeatedcv", number=10, repeats=3,
+                              savePredictions = TRUE, 
+                              classProbs = TRUE, 
+                              verboseIter = FALSE)
+linearSVM <- train(Survived ~., 
+                  data = train, 
+                  method = "svmLinear", 
+                  trControl = train_control,  
+                  preProcess = c("center","scale"),
+                  tuneGrid = expand.grid(C = seq(0.1, 10, by = .5)))
+```
+When we inspect the object we see that the optimal value for $C$ has been trained to be `r linearSVM$bestTune`
+
+Let's inspect the tuning parameters and the cross-validated performance on the training set. 
+```{r}
+plot(linearSVM)
+```
+Let's also inspect the ROC curve on the cross-validated data:
+```{r}
+plots <- evalm(linearSVM, showplots = FALSE, silent = TRUE)
+plots$roc
+plots$stdres
+```
+The Receiver Operator Characteristic (ROC) curve shows the trade-off between sensitivity - or true positive rate (TPR) - and specificity: 1 – false positive rate (FPR). Classifiers that give curves closer to the top-left corner indicate a better performance. A random classifier is expected to yield predictions that result in a perfect relation between sensitivity and specificity. The ROC curve will then go along the diagonal (where FPR = TPR). The closer the curve comes to the 45-degree diagonal of the ROC space, the less accurate the test.
+
+The ROC does not depend on the class distribution, making it very useful for evaluating classifiers that aim to predict rare events. Rare events are e.g. disease or disasters, where so-called *class balances* are very skewed. Accuracy would then favor classifiers that always predict a negative outcome. 
+
+We can use the area under the ROC curve (AUC) to compare different predictive classifiers. The AUC on the crossvalidated trained model is `.73`.
 
 ```{r}
-fit <- titanic %$% 
-  glm(Survived ~ Age * Pclass * Sex, family = binomial(link = "logit"))
-
-fit %>% 
-  summary
+pred.probs <- predict(linearSVM, 
+                      newdata = test %>% select(-Name), 
+                      type = "prob") 
+ROC <- roc(predictor = pred.probs$Survived,
+           response = test$Survived, 
+           plot = TRUE)
+ROC$auc
+plot(ROC)
 ```
-There are so many logodds to interpret, and the interactions make it quite challenging too. In such a case I'd often plot the predicted probabilities against a simulated data set. That makes it much simpler to interpret the effects. 
 
----
-
-_6_ **Create a simulated data set where the rows represent each possible combination over the observed values of the predictors. Display the summary statistics for your simulated data set.** 
-
+Let's generate the predicted values
 ```{r}
-sim <- titanic %>% 
-  expand(Pclass, Sex, Age)
-summary(sim)
+linearSVM.pred <- predict(linearSVM, 
+                          newdata = test %>% select(-Name), 
+                          type = "raw") 
 ```
-We now have a simulated set that contains all possible interactions of all potential data combinations across `Pclass`, `Sex` and `Age`. 
 
----
-
-_7_ **Apply the fitted model on the simulated data and add columns to your simulated data with the predicted logodds and probabilities and the standard error of each fitted value.**
-
+To inspect the performance of the final model on the test set:
 ```{r}
-pred <- cbind(sim, 
-              predict(fit, 
-                      newdata = sim, 
-                      type = "link", 
-                      se = TRUE)) %>% 
-  select(-residual.scale) %>% 
-  mutate(prob = plogis(fit))
-head(pred)
+confusionMatrix(linearSVM.pred, test$Survived)
 ```
 
 ---
 
-_8_ **Use `ggplot()` to display the plot of predicted survival probabilities vs all other features separately for males and females.**
-
-```{r fig.width = 10, fig.height=6}
-pred %>% 
-  mutate(lower = plogis(fit - 1.96 * se.fit),     # lower prediction bound
-         upper = plogis(fit + 1.96 * se.fit)) %>% # upper prediction bound
-  ggplot(aes(y = prob, x = Age, fill = Pclass)) + 
-  geom_ribbon(aes(ymin = lower, 
-                  ymax = upper, 
-                  fill = Pclass), 
-              alpha = .2) +
-  geom_line(aes(colour = Pclass), lwd = 1) + 
-  ylab("Probability of Survival") + 
-  xlab("Age of passenger") + 
-  facet_wrap(vars(Sex)) + 
-  scale_fill_discrete(name = "Pclass", 
-                      labels = c("1st class", "2nd class", "3rd class")) +
-  labs(colour = "Passenger class", fill = "Passenger class") +
-  scale_colour_discrete(name = "Pclass", 
-                        labels = c("1st class", "2nd class", "3rd class"))
-  
+### Polynomial kernel SVM
+Let's train the polynomial kernel support vector machine
+```{r polySVM, cache = TRUE}
+polySVM <- train(Survived ~., 
+                 data = train, 
+                 method = "svmPoly", 
+                 trControl = train_control,  
+                 preProcess = c("center","scale"),
+                 tuneGrid = expand.grid(C = seq(0.25, 2, by = .25),
+                                        scale = seq(0.1, .3, by = .1),
+                                        degree = c(1:4)))
 ```
 
-I think this plot is much easier to interpret. 
+Let's inspect the tuning parameters and the cross-validated performance on the training set. 
+```{r}
+plot(polySVM)
+polySVM
+```
+
+Inspect the ROC curve of the predictions
+```{r}
+pred.probs <- predict(polySVM, 
+                      newdata = test %>% select(-Name), 
+                      type = "prob") 
+ROC <- roc(predictor = pred.probs$Survived,
+           response = test$Survived, 
+           plot = TRUE)
+ROC$auc
+plot(ROC)
+```
+
+Now we generate the predicted values
+```{r}
+polySVM.pred <- predict(polySVM, 
+                        newdata = test %>% select(-Name), 
+                        type = "raw") 
+```
+
+To inspect the performance of the final model on the test set:
+```{r}
+confusionMatrix(polySVM.pred, test$Survived)
+```
 
 ---
 
-End of exercise
+### Radial kernel SVM
+Let's train the polynomial kernel support vector machine
+```{r radialSVM, cache = TRUE}
+radialSVM <- train(Survived~., 
+                   data = train, 
+                   method = "svmRadial", 
+                   trControl = train_control,  
+                   preProcess = c("center","scale"),
+                   tuneLength = 10)
+```
+Instead of specifying a grid, we can also ask `caret` to utilize a tunelength of `10`. It will then cycle over the hyperparameter grid conform this length. For the linear SVM kernel, there is only tuning parameter $C$; `tunelength` needs more than one tuning parameter to be used. When we inspect the object we see that the optimal value for $C$ has been trained to be `r polySVM$bestTune`
+
+When we inspect the object we see that the optimal value for $C$ has been trained to be `r radialSVM$bestTune`
+
+Let's inspect the tuning parameters and the cross-validated performance on the training set. 
+```{r}
+plot(radialSVM)
+radialSVM
+```
+
+Let's inspect the ROC curve on the predictions
+```{r}
+pred.probs <- predict(radialSVM, 
+                      newdata = test %>% select(-Name), 
+                      type = "prob") 
+ROC <- roc(predictor = pred.probs$Survived,
+           response = test$Survived, 
+           plot = TRUE)
+ROC$auc
+plot(ROC)
+```
+
+And generate the predicted values
+```{r}
+radialSVM.pred <- predict(radialSVM, 
+                          newdata = test %>% select(-Name), 
+                          type = "raw") 
+```
+
+To inspect the performance of the final model on the test set:
+```{r}
+confusionMatrix(radialSVM.pred, test$Survived)
+```
+
+---
+
+# Part C: Indian Liver Patient data
+
+In this part, we will learn how to use different ensemble methods in `R`, recap on how to evaluate the performance of the methods, and learn how we can substantively interpret the model output.
+
+There are some packages we need for this part of the practical that we did not yet load:
+We use the following packages:
+```{r packages2, warning = FALSE, message = FALSE}
+library(psych)
+library(gbm)
+library(xgboost)
+library(data.table)
+library(ggforce)
+```
+
+In this practical we will work with the ILPD (Indian Liver Patient Dataset) from the UCI Machine Learning Repository (you can find the data [here](https://archive.ics.uci.edu/ml/datasets/ILPD+(Indian+Liver+Patient+Dataset))). This data set contains data on 414 liver disease patients, and 165 non-patients. In general, medical researchers have two distinct goals when doing research: (1) to be able to classify people in their waiting room as either patients or non-patients, and (2) get insight into the factors that are associated with the disease. In this practical part, we will look at both aspects. 
+
+I have prepared the training and test data sets for you. You can load them in by running the following code block, which grabs the data from one of my repositories. The data are 
+```{r}
+con <- url("https://www.gerkovink.com/datasets/train_test.Rdata")
+load(con)
+```
+
+We will use these data sets to make inferences and to train a prediction model.
+
+Before we continue, we fix the random number generator seed. 
+
+```{r seed2}
+set.seed(123)
+```
+
+---
+
+## Exploring the data
+
+---
+
+__C1. Get an impression of the training data by looking at the structure of the data and creating some descriptive statistics.__
+
+First we inspect the `head()` and `tail()` of the `train` data
+```{r explore-data, include = TRUE}
+head(train)
+tail(train)
+```
+
+We can also obtain descriptive statistics about this data as follows
+```{r}
+train %>%
+  select(-c(Gender, Disease)) %>%
+  describeBy(train$Disease, fast = TRUE)
+```
+It is quite clear that there are substantial differences between the diseased and non-diseased in the data.
+
+---
+
+__C2. To further explore the data for this practical, create some interesting data visualizations that show whether there are interesting patterns in the data.__
+
+*Hint:* Think about adding a color aesthetic for the variable `Disease`.
+
+I give here a set of visualization that I think are informative. There are many more visualization that one could create:
+```{r exploratory-viz, include = TRUE, cache = TRUE}
+train %>%
+  select(-Gender) %>%
+  pivot_longer(where(is.numeric)) %>%
+  ggplot(aes(x = value, col = Disease, fill = Disease)) +
+  geom_boxplot(alpha = 0.8) +
+  facet_wrap(~name, scales = "free") +
+  scale_color_brewer(palette = "Paired") +
+  scale_fill_brewer(palette = "Paired") +
+  theme_minimal()
+
+train %>%
+  select(-Gender) %>%
+  pivot_longer(where(is.numeric)) %>%
+  ggplot(aes(x = value, col = Disease, fill = Disease)) +
+  geom_density(alpha = 0.8) +
+  facet_wrap(~name, scales = "free") +
+  scale_color_brewer(palette = "Paired") +
+  scale_fill_brewer(palette = "Paired") +
+  theme_minimal()
+
+
+prop.table(table(train$Gender, train$Disease), margin = 1) %>%
+  as.data.frame %>%
+  select(Gender = Var1, Disease = Var2, `Relative Frequency` = Freq) %>%
+  ggplot(aes(y = `Relative Frequency`, x = Gender, col = Disease, fill = Disease)) +
+  geom_histogram(alpha = 0.8, stat = "identity", position = "dodge") +
+  scale_fill_brewer(palette = "Paired") +
+  scale_color_brewer(palette = "Paired") +
+  theme_minimal()
+```
+From these visualizations we can see differences between the distributions for the two `Disease` categories. However, these differences do not seem to be dramatic. Additionally, there are relatively more women with the liver disease than men.
+
+---
+
+## Boosting vs Bagging vs Random Forests
+
+---
+
+__C3. Shortly reflect on the difference between bagging, random forests, and boosting.__
+
+```{r ensemble-methods, include = TRUE}
+## Bagging:       fit a regression tree to N bootstrap samples of the training data
+##                take the average of all classification trees to base predictions on
+##                Note: out-of-bag data can serve as internal validation set.
+
+## Random forest: Similarly to bagging, classification trees are trained on 
+##                a bootstrap sample of the data. However, the decision trees
+##                are trained using a subset of features from the data. 
+
+## Boosting:      We build a decision tree sequentially. Given the current
+##                we fit a (small) tree on the residuals of the current model, 
+##                rather than on the outcome Y
+```
+
+---
+
+We are going to apply different machine learning models using the `caret` package. 
+
+---
+
+## Bagging
+
+---
+
+__C4. Apply bagging to the training data, to predict the outcome `Disease`, using the `caret` package.__
+
+*Note.* We first specify the internal validation settings, like so:
+
+```{r cross-validation-settings}
+cvcontrol <- trainControl(method = "repeatedcv", 
+                          number = 10,
+                          allowParallel = TRUE)
+```
+
+These settings can be inserted within the `train` function from the `caret` package. Make sure to use the `treebag` method, to specify `cvcontrol` as the `trControl` argument and to set `importance = TRUE`.
+
+```{r train-bag, include = TRUE}
+bag_train <- train(Disease ~ .,
+                   data = train, 
+                   method = 'treebag',
+                   trControl = cvcontrol,
+                   importance = TRUE)
+```
+
+
+---
+
+### Variable importance and performance
+
+---
+
+__C5. Interpret the variable importance measure using the `varImp` function on the trained model object.__
+
+```{r bag-importance, include = TRUE}
+bag_train %>%
+  varImp %>%
+  plot
+```
+
+---
+
+__C6. Create training set predictions based on the bagged model, and use the `confusionMatrix()` function from the `caret` package to assess it's performance.`__
+
+*Hint: You will have to create predictions based on the trained model for the training data, and evaluate these against the observed values of the training data.*
+
+```{r bag-training-predictions, include = TRUE}
+confusionMatrix(predict(bag_train, type = "raw"),
+                train$Disease)
+```
+We have realized near-perfect training set performance. However, this shows nothing more than that we have been able to train the model rather well. We need to evaluate our model on the test set before we can draw conclusions about predicive power and test error. 
+
+---
+
+__C7. Now ask for the output of the bagged model. Explain why the under both approaches differ.__
+
+```{r show-bag, include = TRUE}
+bag_train
+```
+
+---
+
+We will now follow the same approach, but rather than bagging, we will train a random forest on the training data. 
+
+---
+
+## Random Forest
+
+---
+
+__C8. Fit a random forest to the training data to predict the outcome `Disease`, using the `caret` library.__
+
+*Note.* Use the same `cvcontrol` settings as in the previous model.
+
+```{r train-rf, include = TRUE}
+rf_train <- train(Disease ~ .,
+                  data = train, 
+                  method = 'rf',
+                  trControl = cvcontrol,
+                  importance = TRUE)
+```
+
+---
+
+__C9. Again, interpret the variable importance measure using the `varImp` function on the trained model object. Do you draw the same conclusions as under the bagged model?__
+
+```{r rf-importance, include = TRUE}
+rf_train %>%
+  varImp %>%
+  plot
+```
+
+The random forest model `rf_train` indicates a different variable importance than the bagged model `bag_train`. This is due to the random selection of predictors within random forests: the bootstrap-based trees are thus decorrelated. 
+
+---
+
+__C10. Output the model output from the random forest. Are we doing better than with the bagged model?__
+
+```{r show-rf, include = TRUE}
+rf_train
+```
+Yes, the most accurate model indicates that we do just slightly better than with the bagged model. However, this might well be due to chance.
+
+---
+
+## Boosting
+
+---
+
+__C11. Now, fit a boosting model using the `caret` library to predict disease status.`__
+
+*Hint:* Use gradient boosting (the `gbm` method in `caret`).
+
+```{r fit-gbm, include = TRUE, message = FALSE}
+gbm_train <- train(Disease ~ .,
+                   data = train,
+                   method = "gbm",
+                   verbose = F,
+                   trControl = cvcontrol)
+```
+
+---
+
+__C12. Again, interpret the variable importance measure. You will have to call for `summary()` on the model object you just created. Compare the output to the previously obtained variable importance measures.__
+
+```{r gbm_importance, include = TRUE}
+summary(gbm_train)
+```
+
+---
+
+__C13. Output the model output from our gradient boosting procedure. Are we doing better than with the bagged and random forest model?__
+
+```{r show-gbm, include = TRUE}
+gbm_train
+```
+Yes, our best model is doing slightly better then the previous two models. However, the performance gain is small and might be due to random variation.
+
+---
+
+## `xgboost` and `SHAP`
+
+---
+
+For now, we will continue with extreme gradient boosting, although we will use a difference procedure.
+
+
+We will use `xgboost` to train a binary classification model, and create some visualizations to obtain additional insight in our model. We will create the visualizations using `SHAP` (**SH**apley **A**dditive ex**P**lanations) values, which are a measure of importance of the variables in the model. In fact, `SHAP` values indicate the influence of each input variable on the predicted probability for each person. Essentially, these give an indication of the difference between the predicted probability with and without that variable, for each person's score.
+
+---
+
+__C14. Download the file `shap.R` from [this](https://github.com/pablo14/shap-values) Github repository.__
+
+*Note.* There are multiple ways to this, of which the simplest is to run the following code. 
+
+```{r download-shap-functions, message = FALSE}
+con <- url("https://github.com/pablo14/shap-values/blob/master/shap.R?raw=TRUE")
+source(con)
+```
+
+---
+
+__C15. Specify your model as follows, and use it to create predictions on the training data.__
+
+```{r xgboost, results = FALSE, message = FALSE}
+train_x <- model.matrix(Disease ~ ., train)[,-1]
+train_y <- as.numeric(train$Disease) - 1
+xgboost_train <- xgboost(data = train_x,
+                         label = train_y, 
+                         max.depth = 10,
+                         eta = 1,
+                         nthread = 4,
+                         nrounds = 4,
+                         objective = "binary:logistic",
+                         verbose = 2)
+
+pred <- tibble(Disease = predict(xgboost_train, newdata = train_x)) %>%
+  mutate(Disease = factor(ifelse(Disease < 0.5, 1, 2),
+                          labels = c("Healthy", "Disease")))
+confusionMatrix(pred$Disease, train$Disease)
+```
+
+---
+
+__C16. First, calculate the `SHAP` rank scores for all variables in the data, and create a variable importance plot using these values. Interpret the plot.__
+
+```{r make-shap, results = TRUE, fig.show='hide'}
+shap_results <- shap.score.rank(xgboost_train,
+                                X_train = train_x,
+                                shap_approx = F)
+
+var_importance(shap_results)
+```
+
+---
+
+__C17. Plot the `SHAP` values for every individual for every feature and interpret them.__
+
+```{r shap-plots, results = TRUE}
+shap_long <- shap.prep(shap = shap_results,
+                       X_train = train_x)
+
+plot.shap.summary(shap_long)
+
+xgb.plot.shap(train_x, features = colnames(train_x), model = xgboost_train, n_col = 3)
+```
+
+The first plot demonstrates that those with a high value for
+Direct_Bilirubin have a lower probability of being diseased. Also,
+Those with a higher age have a lower probability of being diseased,
+while those with a higher Albumin have a higher probability of being diseased.
+
+The second set of plots displays the marginal relationships of the SHAP values with the predictors. This conveys the same information, but in greater detail. The interpretability may be a bit tricky for the inexperienced data analyst. 
+
+---
+
+__C18. Verify which of the models you created in this practical performs best on the test data.__
+
+```{r test-models, include = TRUE}
+bag_test <- predict(bag_train, newdata = test)
+rf_test  <- predict(rf_train, newdata = test)
+gbm_test <- predict(gbm_train, newdata = test)
+xgb_test <- predict(xgboost_train, newdata = model.matrix(Disease ~ ., test)[,-1]) %>%
+  factor(x = ifelse(. < 0.5, 1, 2), levels = c(1,2), labels = c("Healthy", "Disease"))
+
+list(`bagging` = bag_test, 
+     `random_forest` = rf_test, 
+     `gradient_boosting` = gbm_test, 
+     `xtreme_gradient_boosting` = xgb_test) %>%
+  map(~ confusionMatrix(.x, test$Disease))
+```
+
+---
+
+End of all exercises
