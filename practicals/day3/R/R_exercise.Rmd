@@ -986,7 +986,11 @@ list(`bagging` = bag_test,
   map(~ confusionMatrix(.x, test$Disease))
 ```
 
-The best performing model in this case on this data split is the `gradient boosting` model from exercise `C11`. 
+The best performing model in this case on this data split is the `gradient boosting` model from exercise `C11`.
+
+---
+
+## Calibration
 
 __C19. Verify if the model is calibrated.__
 To do so, we take the predicted values from the model in `C11` and bind them together with the observed class for the `test` set. 
@@ -1027,7 +1031,6 @@ We can see that for none of the models the probabilities are well-calibrated.
 <!-- calibration(obs ~ gbm.Healthy + glm, data = out) %>%  -->
 <!--   xyplot( auto.key = list(columns = 2)) -->
 <!-- ``` -->
-
 
 ---
 
