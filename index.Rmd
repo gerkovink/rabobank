@@ -276,7 +276,12 @@ I will add a video discussion to this exercise next Wednesday.
 
 - [A great blog](https://blog.revolutionanalytics.com/2016/03/com_class_eval_metrics_r.html) about manually calculating some of the discussed evaluation metrics in `R`. 
 
-
-
 If you have questions about the exercises or any of the other documents, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
+
+### In `bigML`
+
+We use generic machine learning data sets in our exercises. The train of thought in the exercises therefore closely resembles parts of [this online training](http://training.bigml.com) by `bigML`. Some of you have access to this platform, already. With `bigML` you can simply apply and evaluate a selection of machine learning algorithms in a standardized framework. For this you do not need any coding experience. 
+
+
+
 
