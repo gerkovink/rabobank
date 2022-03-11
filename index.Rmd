@@ -282,6 +282,8 @@ If you have questions about the exercises or any of the other documents, please 
 
 We use generic machine learning data sets in our exercises. The train of thought in the exercises therefore closely resembles parts of [this online training](http://training.bigml.com) by `bigML`. Some of you have access to this platform, already. With `bigML` you can simply apply and evaluate a selection of machine learning algorithms in a standardized framework. For this you do not need any coding experience. 
 
+- [Exercise in `bigML`](practicals/day3/bigML/bigML_exercise.html). This is the JASP exercise mimicked in `bigML`, with K-Means clustering instead of KNN classification. 
+
 
 
 
