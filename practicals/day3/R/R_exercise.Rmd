@@ -138,6 +138,13 @@ train <- Default[trainIndex, ]
 test <- Default[-trainIndex, ]
 ```
 
+The above code splits the data into two parts:
+
+1. A training part that contains 80% of the cases
+2. A test part that contains the remaining 20% of the cases. 
+
+These parts are stored in the `train` and `test` objects, respectively. The goal of this splitting is to identify the fit of the model by not using all cases to train the model on. If we would train the model on the same data that we would evaluate the model on, we run the risk of overfitting our model and fovouring our evaluations. By holding out a part of the data we can test if our model indeed fits on cases that have never been *seen by the model* before. 
+
 ---
 
 ## K-Nearest Neighbours
@@ -229,6 +236,8 @@ The confusion matrix is an insightful summary of the plots we have made and the 
 ```{r confmat1}
 confusionMatrix(knn_2_pred, test$default)
 ```
+
+The confusion matrix is an insightful means of studying the performance of a classification model. By looking at the crosstable of predictions against observations, we can study the rates by which our fitted model results in correct and false predictions. In this case, our model results in 95.3% correct predictions on the credit card default data. However, the baseline accuracy (prevalence) of this data set is 96.7%. In other words, if we would simply have predicted our data as `No Default`, we would have gotten a higher accuracy. This places the accuracy for this model in another light. Just like we said in the lecture, don't stare blind on accuracy as it is not a good measure of performance in unbalanced data. 
 
 ---
 
@@ -976,6 +985,49 @@ list(`bagging` = bag_test,
      `xtreme_gradient_boosting` = xgb_test) %>%
   map(~ confusionMatrix(.x, test$Disease))
 ```
+
+The best performing model in this case on this data split is the `gradient boosting` model from exercise `C11`. 
+
+__C19. Verify if the model is calibrated.__
+To do so, we take the predicted values from the model in `C11` and bind them together with the observed class for the `test` set. 
+```{r}
+out <- data.frame(obs = test$Disease,
+                  gbm = predict(gbm_train, newdata = test, type = "prob"),
+                  rf  = predict(rf_train, newdata = test, type = "prob"),
+                  bag = predict(bag_train, newdata = test, type = "prob"),
+                  xgb = 1 - predict(xgboost_train, newdata = model.matrix(Disease ~ ., test)[,-1]))
+out %>% head()
+```
+The `caret` package has a function to obtain the calibration data and to plot the calibration plot
+```{r}
+calibration(obs ~ gbm.Healthy + rf.Healthy + bag.Healthy + xgb, data = out) %>% 
+  xyplot( auto.key = list(columns = 2))
+```
+
+We can see that for none of the models the probabilities are well-calibrated. 
+
+<!-- One simple way to realize calibration is by running a logistic regression model on the fitted probabilities to model the outcome. Then, the obtained parameters can be used to calibrate the probabilities obtained on the `test` set.  -->
+
+<!-- ```{r} -->
+<!-- fitted <- data.frame(obs = train$Disease, -->
+<!--                      gbm = predict(gbm_train, type = "prob")) -->
+<!-- fitted -->
+<!-- fit.glm <- fitted %$%  -->
+<!--   glm(obs ~ gbm.Healthy, family = binomial(link="logit")) -->
+
+<!-- pred.glm <- fit.glm %>% predict(newdata = out, type = "response") -->
+<!-- ``` -->
+<!-- Now we add these calibrated predicted probabilities to the object `out` that we created earlier.  -->
+<!-- ```{r} -->
+<!-- out$glm <- 1 - pred.glm # to get the probs for Healthy -->
+<!-- out -->
+<!-- ``` -->
+<!-- and we recreate the calibration plot -->
+<!-- ```{r} -->
+<!-- calibration(obs ~ gbm.Healthy + glm, data = out) %>%  -->
+<!--   xyplot( auto.key = list(columns = 2)) -->
+<!-- ``` -->
+
 
 ---
 
