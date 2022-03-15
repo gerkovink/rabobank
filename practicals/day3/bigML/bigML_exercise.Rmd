@@ -60,6 +60,12 @@ The data can be [obtained here](https://www.gerkovink.com/datasets/Default.csv).
 
 _2_ **Upload the file and inspect the `Default` data set**
 
+The complete workflow process is outlined in the below image sequence. 
+
+![](img/img0.gif){width=100%}
+
+A step-by-step image walkthrough follows below:
+
 ![](img/img1.png){width=100%}
 Check the locale and adjust to English if appropriate
 
