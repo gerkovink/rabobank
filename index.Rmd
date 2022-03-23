@@ -262,8 +262,7 @@ Please find the lecture slides and relevant materials below:
 [JASP](https://jasp-stats.org) is an open-source statistics processor aimed at provinding an easy to use intuitive interface for standard analysis procedures. If you have little experience with statistics and programming, we recommend following the exercises in JASP. 
 
 - [Exercise in JASP](practicals/day3/JASP/JASP_exercise.html)
-
-I will add a video discussion to this exercise next Wednesday. 
+- [video discussion of the exercise](practicals/day3/JASP/jasp-recording.mp4)
 
 If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl)
 
@@ -271,8 +270,7 @@ If you have questions about the exercises, please contact [Gerko Vink](mailto:G.
 [`R`](https://www.r-project.org) is a free software environment that serves as the de facto standard for statistical computing and graphics. If you have experience with statistics and programming, we recommend following the exercises in `R`. 
 
 - [Exercise in `R`](practicals/day3/R/R_exercise.html)
-
-I will add a video discussion to this exercise next Wednesday. 
+- [video discussion of the exercise](https://www.dropbox.com/s/6xyn000mw49w890/jasp-recording.mp4?dl=0)
 
 - [A great blog](https://blog.revolutionanalytics.com/2016/03/com_class_eval_metrics_r.html) about manually calculating some of the discussed evaluation metrics in `R`. 
 
