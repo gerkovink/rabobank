@@ -282,5 +282,57 @@ We use generic machine learning data sets in our exercises. The train of thought
 - [Exercise in `bigML`](practicals/day3/bigML/bigML_exercise.html). This is the JASP exercise mimicked in `bigML`, with K-Means clustering instead of KNN classification. 
 
 
+# Meeting 4
+
+## Column 1
+
+### This meeting
+In this meeting, [Prof. dr. Stef van Buuren](https://stefvanbuuren.name)
+will teach us about *dark data, imputation and data synthesis*. <br>
+
+During and after the lecture there will be plenty of room for questions and discussion. To aid the understanding of this meeting's theory we have prepared a series of exercises for you. You can find all meeting materials in the column to the right. 
+
+[**THIS IS THE MEETING LINK FOR THE FOURTH MEETING**](https://teams.microsoft.com/l/meetup-join/19%3ameeting_MGEyOTA4YjktNGQyNC00ZWFhLTkwM2UtODI3MmY3NzJlOTg5%40thread.v2/0?context=%7b%22Tid%22%3a%22d72758a0-a446-4e0f-a0aa-4bf95a4a10e7%22%2c%22Oid%22%3a%22cc7d7fcd-73aa-4668-936a-2ca38cace0f3%22%7d)
+
+
+
+### Meeting schedule
+| When?  |      | What?      |
+|:--------|:-------|:-------------|
+| 09.30 | 09.45  | Introduction |
+| 09.45 | 11.15  | Lecture |
+| 11.15 | 11.30  | Discussion |
+| 11.30 | 12.00  | Set up for the final meeting |
+
+We will reserve plenty of room for breaks. 
+
+### Other useful links
+Our group works hard on the development and dissemination of incomplete data methods and methods of data synthesis. You may consider the following links
+
+- [Flexible imputation of missing data](https://stefvanbuuren.name/fimd/) book by Stef van Buuren
+- [our group's GitHub organization](https://github.com/amices)
+- [A publication detailing the workflow of data synthesis in `mice`](https://www.mdpi.com/2624-8611/3/4/45) with simulation proofs of its validity. 
+
+## Column 2
+
+### Lecture slides
+Please find the lecture slides and relevant materials below:
+
+- [Slides for this meeting](files/)
+
+### Exercise with ShinyMice
+[JASP](https://jasp-stats.org) does not yet allow for data imputation. To get a feeling about imputing and inspecting incomplete data with `mice` in `R` without having to know `R`, we have developed `ShinyMice`. With `ShinyMice`, users can generate, inspect and evaluate incomplete data imputations in the browser.  
+
+- [Exercise in `ShinyMice`](practicals/day4/Shinymice/Shinymice_exercise.html)
+
+If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl)
+
+### Exercises in `R`
+[`R`](https://www.r-project.org) is a free software environment that serves as the de facto standard for statistical computing and graphics. If you have experience with statistics and programming, we recommend following the exercises in `R`. 
+
+- [Exercise in `R`](practicals/day4/R/R_exercise.html)
+- [Generating synthetic data sets with `mice`](PLACEHOLDER)
+
+If you have questions about the exercises or any of the other documents, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
 
 
