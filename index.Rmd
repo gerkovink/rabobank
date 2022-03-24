@@ -299,12 +299,9 @@ During and after the lecture there will be plenty of room for questions and disc
 ### Meeting schedule
 | When?  |      | What?      |
 |:--------|:-------|:-------------|
-| 09.30 | 09.45  | Introduction |
-| 09.45 | 11.15  | Lecture |
-| 11.15 | 11.30  | Discussion |
-| 11.30 | 12.00  | Set up for the final meeting |
-
-We will reserve plenty of room for breaks. 
+| 09.30 | 10.15  | Lecture 1 |
+| 10.30 | 11.15  | Lecture 2 |
+| 11.30 | 12.00  | Lecture 3 and set-up for final meeting |
 
 ### Other useful links
 Our group works hard on the development and dissemination of incomplete data methods and methods of data synthesis. You may consider the following links
@@ -318,7 +315,8 @@ Our group works hard on the development and dissemination of incomplete data met
 ### Lecture slides
 Please find the lecture slides and relevant materials below:
 
-- [Slides for this meeting](files/)
+- [Slides for this meeting](files/dark-data-rabobank.pdf)
+- [Handout of the slides](files/dark-data-rabobank-handout.pdf)
 
 ### Exercise with ShinyMice
 [JASP](https://jasp-stats.org) does not yet allow for data imputation. To get a feeling about imputing and inspecting incomplete data with `mice` in `R` without having to know `R`, we have developed `ShinyMice`. With `ShinyMice`, users can generate, inspect and evaluate incomplete data imputations in the browser.  
