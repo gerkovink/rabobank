@@ -56,7 +56,7 @@ _1_ **Study [this tutorial](https://jasp-stats.org/2019/10/07/how-to-train-a-mac
 
 # Default data
 
-We continue with the `Default` data set from the book [Introduction to Statistical Learning](https://www.statlearning.com) by James, Witten, Hastie & Tibshirani (2021 - 2nd edition). We also used this data set in the previous `JASP` exercise for week 2. The data set contains  information about `default` on creditcard payments for `students` and non-students, with for every respondent measurements on `income` and creditcard `balance`. 
+We conntinue with the `Default` data set from the book [Introduction to Statistical Learning](https://www.statlearning.com) by James, Witten, Hastie & Tibshirani (2021 - 2nd edition). We also used this data set in the previous `JASP` exercise for week 2. The data set contains  information about `default` on creditcard payments for `students` and non-students, with for every respondent measurements on `income` and creditcard `balance`. 
 
 The data can be [obtained here](https://www.gerkovink.com/datasets/Default.csv)
 
@@ -116,7 +116,7 @@ _4_ **Now use the machine learning module to fit a Random Forest classification 
 
 ---
 
-Try to make sense of the output by yourself. You can use the slides and corresponding references that Daniel provided, or any source for that matter. I will add [a video discussion of the corresponding output files](https://www.dropbox.com/s/6xyn000mw49w890/jasp-recording.mp4?dl=0) to the course page on Wednesday March 23. 
+Try to make sense of the output by yourself. You can use the slides and corresponding references that Daniel provided, or any source for that matter. I will add a video discussion of the corresponding output files to the course page on Wednesday March 16. 
 
 ---
 
