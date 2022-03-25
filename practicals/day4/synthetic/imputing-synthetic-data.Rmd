@@ -1,0 +1,404 @@
+---
+title: "Creating Synthetic Data in R"
+author: "Thom Benjamin Volker"
+params:
+  answers: true
+bibliography: synthetic-vignette.bib
+output: 
+   html_document:
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    number_sections: false
+---
+
+<style type="text/css">
+  
+body{ /* Normal  */
+  font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 18px;
+  color: DarkBlue;
+}
+h1 { /* Header 1 */
+  font-size: 18px;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+  font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+  font-size: 14px;
+}
+</style>
+
+---
+
+# Introduction
+
+---
+
+In this practical, you will create a synthetic version of the `boys` data set in the `mice` package [@mice], using state-of-the-art imputation techniques. The `boys` data contains information on the growth of `r nrow(mice::boys)` Dutch boys. The following `r ncol(mice::boys)` are recorded:
+
+- `age`: Decimal age (0-21 years)
+- `hgt`: Height (cm)
+- `wgt`: Weight (kg)
+- `bmi`: Body mass index
+- `hc`: Head circumference (cm)
+- `gen`: Genital Tanner stage (G1-G5)
+- `phb`: Pubic hair (Tanner P1-P6)
+- `tv`: Testicular volume (ml)
+- `reg`: Region (north, east, west, south, city)
+
+As you understand, the data contains quite some sensitive information. Fortunately, all cases are completely anonymous and and identification on the basis of the data is impossible. Suppose, however, that the data could be linked to a second data set, that does contain identifying information on the sampled individuals. In such circumstances, it is inappropriate and legally not allowed to share the data openly. In such cases, it might be worthwhile to create a fake alternative that can be nearly as informative as the observed data [@volker_vink_synthetic_mice_2021], such that all data users can make inferences on the research topics they deal with. 
+
+To create synthetic data, we will use the `R` package `mice`, which is an acronym for `Multivariate Imputation by Chained Equations`. Additionally, we will use `dplyr` to do some basic data manipulation, `purrr` to increase our efficiency when running functions iteratively, and `ggplot2` and `patchwork` to create some additional data visualizations.
+
+```{r packages, warning = F, message = F}
+library(mice)
+library(ggmice)
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(patchwork)
+library(GGally)
+```
+
+Similarly to previous practical assignments, it is a good idea to specify a random seed, such that your answers will be reproducible and comparable to the answers provided. 
+
+```{r}
+set.seed(1)
+```
+
+---
+
+# Part A: Getting familiar with the data
+
+---
+
+*Note.* If you worked extensively with the `boys` data during the previous practical exercise, you may skip or skim Part A, because it might be repetitive. 
+
+Before working with any data, it is a good idea to dive into the structure of the data, and get a sense of what the data looks like. 
+
+---
+
+__1. Use the `summary()` function on the `boys` data to obtain some univariate information on the variables in the data.__
+
+```{r boys-summary, results = params$answers}
+summary(boys)
+```
+
+This summary shows that `r sum(sapply(boys, is.numeric))` are numeric, while the other `r sum(sapply(boys, is.factor))` are factor (i.e., categorical) variables. The summary of the variables provides information on the scale of the variables, and about the number of observations in each of the categorical of the categorical variables. Additionally, the summary indicates that there is a substantial amount of missing data.
+
+The missingness will be dealt with later on. First, we will create some additional visualizations, to deepen our understanding of the data.
+
+---
+
+__2. Create a histogram for each of the numeric variables in the data using `ggplot` and `geom_histogram()`.__
+
+*Hint.* You can do this on a variable by variable basis, but you could as well use the `map` function from the `purrr` package, to iterate over the numeric variables, and use `wrap_plots()` from the `patchwork` package to glue the plots together.
+
+```{r histograms, message = F, results = params$answers, warning = F}
+boys %>%
+  select(where(is.numeric)) %>%
+  colnames %>%
+  map(~ggplot(data = boys, aes(x = boys[, .x])) + 
+        geom_histogram(fill = "dark blue") +
+        labs(x = .x) +
+        theme_minimal()) %>%
+  wrap_plots()
+```
+
+---
+
+__3. Do the same for the categorical variables, but use `geom_bar()` rather than `geom_histogram()`.__
+
+```{r barplots}
+boys %>%
+  select(where(is.factor)) %>%
+  colnames %>%
+  map(~ggplot(data = boys, aes(x = boys[, .x])) + 
+        geom_bar(fill = "dark blue") +
+        labs(x = .x) +
+        theme_minimal() +
+        theme(axis.text.x = element_text(angle = 45))) %>%
+  wrap_plots()
+```
+
+Once again, this plot shows that the amount of missing data in the variables `gen` and `phb` is substantial.
+
+---
+
+To get some more information on the relationships between the variables, we will plot pairwise scatterplots for these variables. 
+
+__4. Plot the pairwise correlations between the numeric variables in the `boys` data using the function `ggpairs` from the `R`-package `GGally`.__
+
+```{r pairwise-plots, results = params$answers, message = F, warning=F}
+boys %>%
+  select(where(is.numeric)) %>%
+  ggpairs(diag = NULL, 
+          progress = F)
+```
+
+The plot shows that there are substantial correlations between the variables in the data. 
+
+Additionally, we know that there is a substantial amount of missingness in the data. To get more insight into the missingness problem, it is generally advisable to investigate the missingness visually, as in the previous practical. For now, we will refrain from this procedure, and jump straight to creating synthetic data sets.
+
+---
+
+Part B: Creating synthetic data
+
+---
+
+Now we are familiar with the structure of the data, it is time to create a synthetic version. Although it is generally possible to solve for the missingness while synthesizing data, this will result in more complicated inferential procedures. For the sake of exposition, we will therefore limit the current practical to creating a synthetic version of a complete data set. Therefore, we will, against common advise, first create a single imputed complete version of the `boys` data, pretend that this imputed set is actually completely observed, and create synthetic data sets on the basis of the completed `boys` data.
+
+---
+
+__5. Create a completed version of the `boys` data by using single imputation and 50 iterations.__
+
+*Hint.* Do not forget to use `passive` imputation on `bmi`, as `bmi` completely determined by the height and weight of the observation, and to adjust the predictor matrix accordingly.
+
+```{r impute-boys, results = params$answers}
+meth <- make.method(boys)
+meth[names(meth) != "bmi"] <- "cart"
+meth["bmi"] <- "~I(wgt/(hgt/100)^2)"
+pred <- make.predictorMatrix(boys)
+pred[c("hgt", "wgt"), "bmi"] <- 0
+dat <- mice(boys, 
+            m = 1, 
+            method = meth, 
+            maxit = 20, 
+            print = F) %>% 
+  complete()
+```
+
+---
+
+Now we have a completed data set, we can focus on synthetisation. When creating synthetic data, one has to take into account that there are two, generally conflicting, aims of synthetisation. On the one hand, one should protect the privacy and the confidentiality of the observations. On the other hand, one would not like to lose the information that was present in the original data. That is, the synthetic data should contain the same information and the same relationships as present in the original data. Increasing the quality of the data generally comes at the cost of greater disclosure risks, and assessing the quality of the synthetisation procedure is still very much work in progress, without clear evaluation guidelines. Therefore, substantial scrutiny is required when synthetic data are indeed made publicly available, because no one would like to find their personal information somewhere on the internet. 
+
+---
+
+In the realm of synthetic data, broadly two approaches can be distinguished for the synthetisation procedure. The first one is based on parametric imputation models, and generates synthetic values solely on the basis of an estimated model. That is, after estimating a statistical model, the synthetic data are sampled from a parametric distribution that follows from this model without any further reference to the actually observed data. In general, this procedure is less likely to result in an accidental release of disclosive information. However, these parametric methods are often less capable of reflecting the delicate nature and subtleties of real-world data. 
+
+Such subtleties are often better reproduced when using non- or semi-parametric imputation models. These models reuse to observed data to serve as synthetic data. Accordingly, much of the values that were in the observed data end up in the synthetic data, but because "new" observations are generated, it is generally not possible to link this information to the original respondents. As such, these non- or semi-parametric procedures often yield better inferences, while still being able to prevent disclosure risk (although more research into measures to qualify the remaining risks is required). Therefore, this practical will showcase how to generate synthetic data using classification and regression trees (CART).
+
+---
+
+When creating synthetic data, it is important to specify which of the values are to be replaced by synthetic values. Theoretically, it is possible to only impute a subset of the data, for example those values that bear the highest risk of being disclosive (e.g., the 1% highest incomes). Yet, in general, it is safest to replace all values, because this prevents that the synthetic data can be linked to other data sources. In `mice`, this can be done by specifying the `where` matrix.
+
+__6. Create a matrix of the same dimensions as the `boys` data, with all cells containing the logical `TRUE`.__
+
+```{r, results = params$answers}
+where_syn <- matrix(TRUE, nrow = nrow(boys), ncol = ncol(boys))
+```
+
+---
+
+Now we have specified which cells ought to be synthetic, we can actually generate the synthetic data. We will do so using the `cart` method in `mice`, by specifying the `method` parameter accordingly.
+
+Note, however, that passive imputation does not work when observed values are overimputed, such as is done when creating synthetic data. To overcome this problem, we will post-process the variable `bmi`, such that its relationship with `hgt` and `wgt` is preserved.
+
+---
+
+__7. Create a post-processing object, that makes sure that `bmi` is constructed on the basis of its deterministic relationship with `hgt` and `wgt`.__
+
+```{r make-post, results = params$answers}
+post <- make.post(dat)
+post["bmi"] <- "imp[[j]][, i] <- imp[['wgt']][, i] / (imp[['hgt']][, i] / 100)^2"
+```
+
+That is, we specify that the imputations for `bmi` are calculated in accordance with the actual `wgt` and `hgt` values for every imputation `i`, after the values are imputed on the basis of the imputation model. That is, we overwrite the imputed `bmi` values.
+
+---
+
+Now we have taken care of all issues, we can actually create a synthetic version of the completed boys data set.
+
+__8. Create `m = 10` synthetic data sets with `mice`, using `cart` as the imputation method.`__
+
+*Hint:* When creating a synthetic data, a single iteration is sufficient.
+
+```{r, results = params$answers, warning=F, message=F}
+syn <- mice(dat, 
+            where = where_syn,
+            m = 10, 
+            maxit = 1, 
+            post = post,
+            method = "cart", 
+            print = F)
+```
+
+---
+
+After creating the synthetic data, we *must* assess the quality, in terms of similarity with the observed data. Quality control is conveniently performed using visual methods. However, visualizing synthetic data sets has not yet been implemented in `mice`, and therefore requires some coding by the synthesizer. 
+
+---
+
+__9. Stack the synthetic data sets below the observed data, using the `complete()` function from the `mice` package, with arguments `action = "long"` and `include = TRUE`. Additionally, add an indicator that shows whether the data is observed or synthetic.__
+
+```{r complete-syns, results = params$answers}
+syn_dats <- complete(syn, action = "long", include = T) %>% 
+  mutate(Synthetic = ifelse(.imp == 0, "Observed", "Synthetic"))
+```
+
+On a univariate level, the synthetic data can be compared with the observed data using density plots, which show the distributional similarity of the observed and synthetic data. Similarly to the previous exercises, we can iterate over the numeric columns to assess the distributional similarity. 
+
+---
+
+__10. Create a density plot for each numeric variable with the function `geom_density()`, and map the synthetic data indicator you just created to the `fill` aesthetic. Additionally, set the paramter `alpha` within `geom_density()` to 0.5, such that you can clearly identify the two separate densities for each variable.__
+
+```{r syn-density, results = params$answers, warning=F, message=F}
+syn_dats %>%
+  select(age, hgt, wgt, bmi, hc, tv) %>%
+  colnames %>%
+  map(~ggplot(data = syn_dats, aes(x = syn_dats[, .x], fill = Synthetic)) + 
+        geom_density(show.legend = F, alpha = 0.5) +
+        labs(x = .x) +
+        scale_fill_brewer(palette = "Set2") +
+        theme_minimal()) %>%
+  wrap_plots()
+```
+
+Generally speaking, the synthetic data sets are very similar to the observed data sets, although some deviations occur. However, this would not necessarily be different when drawing a new sampling from the population. In such circumstances, the exact distribution may also differ from sample to sample. When you want to obtain a more fine-grained view of the variation between the synthetic data sets, you could create a similar figure for each synthetic data set. 
+
+---
+
+__11. Create the same plot as in question 10, but rather than the synthetic data indicator, map the variable `.imp` to the fill aesthetic, which will yield a density for the observed data and each of the synthetic data sets.__
+
+*Hint:* You will need include the variable `.imp` as a factor variable. Additionally, setting the `alpha` parameter within `geom_density()` to 0.2 may increase the clarity of the figure.
+
+```{r all-densities, results = params$answers, warning=F, message=F}
+syn_dats %>%
+  select(age, hgt, wgt, bmi, hc, tv) %>%
+  colnames %>%
+  map(~ggplot(data = syn_dats, aes(x = syn_dats[, .x], fill = factor(.imp))) + 
+        geom_density(show.legend = F, alpha = 0.2) +
+        labs(x = .x) +
+        theme_minimal()) %>%
+  wrap_plots()
+```
+
+In fact, all synthetic data sets are highly similar. Hence, our synthesis model is quite capable of capturing the univariate information in the data. 
+
+---
+
+Of course, we did not have solely numeric variables, but we also had several categorical variables. We can create bar plots for these variables to assess whether the distributions appear the same over the observed and synthetic data sets.
+
+---
+
+__12. Create a bar plot using `geom_bar()` for each categorical variable in the data, with one bar for the observed category, and one bar for the synthetic category.__
+
+*Hint:* Within `geom_bar()`, specify `aes(y = ..prop..)` to make sure that the bars are scaled according to the group size and `position = position_dodge2()` to make sure that the bars are displayed side by side. 
+
+```{r cat-var-syn, results = params$answers, warning=F, message=F}
+syn_dats %>%
+  select(where(is.factor)) %>%
+  colnames %>%
+  map(~ggplot(data = syn_dats, aes(x = syn_dats[, .x], fill = Synthetic, group = Synthetic)) + 
+        geom_bar(aes(y = ..prop..), position = position_dodge2(), show.legend = F) +
+        labs(x = .x) +
+        theme_minimal() +
+        scale_fill_brewer(palette = "Set2") +
+        theme(axis.text.x = element_text(angle = 45))) %>%
+  wrap_plots()
+```
+
+Combined over all synthetic data sets, the bars are nearly identical in size!
+
+---
+
+__13. Create a bar plot using `geom_bar()` for each of the categorical variables in the data, with one bar per synthetic data set, in analogue to the density plot of question 11.__
+
+```{r cat-bars-all-syns, results = params$answers, warning=F, message=F}
+syn_dats %>%
+  select(where(is.factor)) %>%
+  colnames %>%
+  map(~ggplot(data = syn_dats, aes(x = syn_dats[, .x], fill = factor(.imp))) + 
+        geom_bar(position = position_dodge2(), show.legend = F) +
+        labs(x = .x) +
+        theme_minimal() +
+        theme(axis.text.x = element_text(angle = 45))) %>%
+  wrap_plots()
+```
+
+When we plot one bar per synthetic data set, the height of each synthetic bar is actually quite similar to the height of the bar for the observed data (the utmost left bar), although there is some variability.
+
+---
+
+After inspecting whether the synthetic data is similar to the observed data on the univariate level, it is also a good idea to inspect whether the data is similar on a multivariate level. One way to do this is by looking at the correlation matrices of the observed and synthetic data. 
+
+__14. Inspect the absolute differences between a correlation matrix of the observed data and a correlation matrix of the synthetic data.__
+
+*Hint:* Do not forget to transform all variables into numeric variables, to prevent `R` from complaining when calculating the correlations.
+
+```{r cor-diffs, results = params$answers, warning=F, message=F}
+obs_data_cor <- syn_dats %>%
+  filter(Synthetic == "Observed") %>%
+  select(-c(.imp, .id, Synthetic)) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  cor()
+
+syn_data_cor <- syn_dats %>%
+  filter(Synthetic == "Synthetic") %>%
+  select(-c(.imp, .id, Synthetic)) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  cor()
+
+abs(obs_data_cor - syn_data_cor)
+```
+
+
+---
+
+
+Additionally, if you already know which analyses will be of interest, you could, as a data owner, compare inferences on the observed and imputed data.
+
+__15. Run a regression model `tv ~ age + gen` on all synthetic data sets, pool the results according to the pooling rules for synthetic data using the `pool()` function with argument `rule = "reiter2003"`, and compare the results substantively to the results of the same regression model fitted on the observed data.__
+
+```{r compare-fits, results = params$answers}
+syn_fit <- with(syn, lm(tv ~ age + gen))
+pool_syn_fit <- pool.syn(syn_fit, rule = "reiter2003")
+
+summary(pool_syn_fit)
+
+obs_fit <- lm(tv ~ age + gen, dat)
+summary(obs_fit)
+```
+
+It can be seen that the coefficients are not exactly equal, but are generally quite close to the estimated coefficients based on the observed data. Once again, this is similar to what would happen if we would draw another sample from the population. 
+
+---
+
+As a final check of the quality of the data, it is possible to try to predict whether the data are actually observed or synthetic. This can be done using classification methods, as discussed in the previous meeting. Consequently, if the data differs in important respects, classification methods could be able to identify in which respects the data are flawed. 
+
+```{r, predict-syn}
+glm(factor(Synthetic) ~ age + hgt + wgt + bmi + hc + gen + phb + tv + reg,
+    family = binomial,
+    data = syn_dats) %>%
+  summary()
+```
+
+As became apparent in previous assessments, the synthetic data hardly differs from the observed data, although there are some differences in terms of the variable `bmi`. A way to verify this is to generate more synthetic data sets. If `bmi` continues to be systematically different, there might be something wrong with the imputation model, such that we might have to tweak some of the parameters of the `cart` model. Additionally, we could use, for example, a random forest model to impute the data. However, it might also be that the difference in terms of `bmi` is just a random error, that will cancel out when we would repeat the procedure. 
+
+---
+
+Now we have assessed the quality of the synthetic data in terms of its similarities with the observed data, it is good to do a final check on the privacy of the model. In fact, a synthetic data set that is exactly the same as the observed data with yield perfect inferential characteristics, but nevertheless would be inappropriate as it does not provide any security on privacy and confidentiality of the participants. One way to do this is to check for duplicates in the observed data. 
+
+```{r}
+duplicated(syn_dats) %>% sum
+```
+
+None of the rows are identical over the observed and synthetic data, which provides some safeguard against accidentally releasing sensitive information. However, if the data contains really sensitive information, this might not be enough, and one could for example check whether the synthetic data differs from the observed data along multiple dimensions (i.e., variables). Such additional checks depend on the problem at hand. 
+
+---
+
+
+# References
