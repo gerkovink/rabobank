@@ -309,6 +309,7 @@ Our group works hard on the development and dissemination of incomplete data met
 - [Flexible imputation of missing data](https://stefvanbuuren.name/fimd/) book by Stef van Buuren
 - [our group's GitHub organization](https://github.com/amices)
 - [A publication detailing the workflow of data synthesis in `mice`](https://www.mdpi.com/2624-8611/3/4/45) with simulation proofs of its validity. 
+- [A paper about imputing a finite population](https://doi.org/10.1515/jos-2017-0045)
 
 ## Column 2
 
