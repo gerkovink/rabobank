@@ -323,7 +323,7 @@ Please find the lecture slides and relevant materials below:
 [JASP](https://jasp-stats.org) does not yet allow for data imputation. To get a feeling about imputing and inspecting incomplete data with `mice` in `R` without having to know `R`, we have developed `ShinyMice`. With `ShinyMice`, users can generate, inspect and evaluate incomplete data imputations in the browser. I (Gerko) walk you through the possibilities and evaluations that `ShinyMice` offers.
 
 - [The `ShinyMice` site](https://hanneoberman.shinyapps.io/shinymice-demo/) and [project site](https://amices.org/shinymice/)
-- [Walkthrough of `ShinyMice`](practicals/day4/Shinymice/Shinymice_exercise.html)
+- [Walkthrough of `ShinyMice`](https://www.dropbox.com/s/r2njkn56hqph5wy/shinymice.mp4?dl=0)
 
 If you have questions about the exercises, please contact [Gerko Vink](mailto:G.Vink@uu.nl). For questions and suggestions about the workings of `ShinyMice`, please contact [Hanne Oberman](https://hanneoberman.github.io). 
 
