@@ -336,3 +336,18 @@ If you have questions about the exercises, please contact [Gerko Vink](mailto:G.
 If you have questions about the exercises or any of the other documents, please contact [Gerko Vink](mailto::G.Vink@uu.nl)
 
 
+# Final meeting
+
+## Column 1
+
+### This meeting
+In this final meeting, we will close of this course series. To this end we ask you to [fill in this form](https://forms.gle/3Ypd8KXAcVttV3Aq7). Your answers to this form will serve as a basis to get interaction going, pick up the leftovers and to arrive at a deeper discussion of the concepts that we have discussed so far. 
+
+This meeting is also the time to pick our brains. So we ask you to 
+
+1. Create a short presentation about a practical or conceptual scenario in your work (i.e. one or two slides). 
+2. This scenario may be data-based, information-based, problem-based, etcetera. 
+3. The scenario may be real, data-based, simulated or even hypothetical, but you must be able to describe it. 
+
+If you find it challenging to identify a scenario in the context of this course, than that can also be your scenario. If you'd like some input beforehand or if you'd like to discuss this, feel free to [approach me (Gerko)](mailto:G.Vink@uu.nl). 
+
