@@ -341,7 +341,8 @@ If you have questions about the exercises or any of the other documents, please 
 ## Column 1
 
 ### This meeting
-In this final meeting, we will close of this course series. To this end we ask you to [fill in this form](https://forms.gle/3Ypd8KXAcVttV3Aq7). Your answers to this form will serve as a basis to get interaction going, pick up the leftovers and to arrive at a deeper discussion of the concepts that we have discussed so far. 
+In this meeting, [Gerko Vink](https://www.gerkovink.com)
+will close the series with a retrospect about the course and some of the core uncertainty principles that were covered. He will also discuss a simulation-based and a reasoning-based solution to scenarios where no comparative truth exists.
 
 This meeting is also the time to pick our brains. So we ask you to 
 
@@ -350,4 +351,19 @@ This meeting is also the time to pick our brains. So we ask you to
 3. The scenario may be real, data-based, simulated or even hypothetical, but you must be able to describe it. 
 
 If you find it challenging to identify a scenario in the context of this course, than that can also be your scenario. If you'd like some input beforehand or if you'd like to discuss this, feel free to [approach me (Gerko)](mailto:G.Vink@uu.nl). 
+
+During and after the lecture there will be plenty of room for questions and discussion.. 
+
+[**THIS IS THE MEETING LINK FOR THE FINAL MEETING**](https://teams.microsoft.com/l/meetup-join/19%3ameeting_YTY4MzUzY2UtZjlhMS00YWI0LThjYjItOGY2ZjVhOTlhNTgy%40thread.v2/0?context=%7b%22Tid%22%3a%22d72758a0-a446-4e0f-a0aa-4bf95a4a10e7%22%2c%22Oid%22%3a%22cc7d7fcd-73aa-4668-936a-2ca38cace0f3%22%7d)
+
+### Meeting schedule
+| When?  |      | What?      |
+|:--------|:-------|:-------------|
+| 09.30 | 10.30  | Lecture |
+| 10.45 | 12.00  | Real-world case discussion |
+
+### Lecture slides
+Please find the lecture slides and relevant materials below:
+
+- [Slides for this meeting](files/L4/Lecture-4.html)
 
