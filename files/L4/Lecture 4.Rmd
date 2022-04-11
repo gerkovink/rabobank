@@ -386,7 +386,7 @@ There are two sources of uncertainty that we need to cover:
 
 <div style="clear: both;"></div>
 
-## Now how do we know we did good?
+## Now how do we know we did well?
 I'm really sorry, but:
 <div class="notepaper">
   <figure class="quote">
@@ -470,7 +470,7 @@ The model to the left fits quite well to the observations.
 
 ## Scenario
 
-In a survey about research integrity and fraud we asked for questionable behaviour responses in the following format. 
+In a survey about research integrity and fraud we surveyed behaviours and practices in the following format. 
 
 <center>
 ![](img/14. not_applicable.png){width=60%}
@@ -500,7 +500,7 @@ There is no solution to this problem
 We chose to impute the data as `1 (never)`. There are a couple of reasons why we think that this is the best defendable scenario.
 
 1. `Never` has a semantic similarity to a behaviour not being applicable. However, `Never` implies intentionality; `Not Applicable` does not.
-2. We know the effect the imputation has on the inference: Filling in `Never` will underestimate behaviours. 
+2. We know the effect the imputation has on the inference: Filling in `Never` will underestimate intentional behaviours. 
 
 In this case the choice was made to make a **deliberate error**. The estimates obtained would serve as an underestimation of *true behaviour* and can be regarded as the lower bound. 
 
